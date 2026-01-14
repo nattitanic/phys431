@@ -1,0 +1,15 @@
+[project]
+name = "mossbauer-spectroscopy-main"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "jupyter-client>=8.8.0",
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.1",
+    "pandas>=2.3.3",
+    "pynvim>=0.6.0",
+    "sympy>=1.14.0",
+    "uncertainties>=3.2.4",
+]
