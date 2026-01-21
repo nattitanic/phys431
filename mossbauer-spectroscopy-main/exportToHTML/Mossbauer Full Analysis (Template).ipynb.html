@@ -1,0 +1,676 @@
+<html>
+<head>
+<title>Mossbauer Full Analysis (Template).ipynb</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #bcbec4;}
+.s1 { color: #cf8e6d;}
+.s2 { color: #7a7e85;}
+.s3 { color: #bcbec4;}
+.s4 { color: #6aab73;}
+.s5 { color: #2aacb8;}
+.ls0 { height: 1px; border-width: 0; color: #43454a; background-color:#43454a}
+</style>
+</head>
+<body bgcolor="#191a1c">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+Mossbauer Full Analysis (Template).ipynb</font>
+</center></td></tr></table>
+<pre><span class="s0">#%% md 
+# Individual Analysis for the M&amp;ouml;ssbauer experiment 
+ 
+## Full analysis template 
+ 
+**This template walks through the analysis starting from the raw MCA spectrum files and associated velocity transducer measurements for each sample.  If you opt to use the LabVIEW data analysis window to obtain the spectrum peak positions and widths, you should use the *Mossbauer Results-Only Analysis* template.** 
+ 
+Use this template to carry out the analysis tasks for the experiment.  For reference, here are links to recommended Python resources: the [Whirlwind Tour of Python](https://jakevdp.github.io/WhirlwindTourOfPython/) and the [Python Data Science Handbook](https://jakevdp.github.io/PythonDataScienceHandbook/) both by Jake VanderPlas. 
+ 
+We will be making use of both the [Uncertainties](https://pythonhosted.org/uncertainties/) and [LMFit](https://lmfit.github.io/lmfit-py/) packages in this notebook. <hr class="ls0">#%% 
+</span><span class="s1">from </span><span class="s0">os </span><span class="s1">import </span><span class="s0">read</span>
+<span class="s1">from </span><span class="s0">statistics </span><span class="s1">import </span><span class="s0">mean</span>
+
+<span class="s1">import </span><span class="s0">numpy </span><span class="s1">as </span><span class="s0">np  </span><span class="s2"># import the numpy library functions.</span>
+<span class="s1">import </span><span class="s0">matplotlib</span><span class="s3">.</span><span class="s0">pyplot </span><span class="s1">as </span><span class="s0">plt </span><span class="s2"># plotting functions</span>
+<span class="s1">import </span><span class="s0">uncertainties </span><span class="s1">as </span><span class="s0">unc</span>
+<span class="s1">from </span><span class="s0">numpy</span><span class="s3">.</span><span class="s0">ma</span><span class="s3">.</span><span class="s0">extras </span><span class="s1">import </span><span class="s0">average</span>
+<span class="s1">from </span><span class="s0">sympy</span><span class="s3">.</span><span class="s0">physics</span><span class="s3">.</span><span class="s0">units </span><span class="s1">import </span><span class="s0">quart</span>
+<span class="s1">from </span><span class="s0">sympy</span><span class="s3">.</span><span class="s0">printing</span><span class="s3">.</span><span class="s0">codeprinter </span><span class="s1">import </span><span class="s0">print_rust_code</span>
+<span class="s1">from </span><span class="s0">uncertainties </span><span class="s1">import </span><span class="s0">unumpy</span><span class="s3">, </span><span class="s0">ufloat</span><span class="s3">, </span><span class="s0">umath </span><span class="s2"># Uncertainties package.  Good for simple error propagation</span>
+<span class="s1">import </span><span class="s0">pandas </span><span class="s1">as </span><span class="s0">pd</span>
+<span class="s1">import </span><span class="s0">scipy </span><span class="s1">as </span><span class="s0">sp</span>
+<span class="s1">from </span><span class="s0">lmfit</span><span class="s3">.</span><span class="s0">models </span><span class="s1">import </span><span class="s0">QuadraticModel</span><span class="s3">, </span><span class="s0">LorentzianModel</span>
+<span class="s3">%</span><span class="s0">matplotlib inline</span><hr class="ls0"><span class="s0">#%% md 
+### Tasks for this analysis 
+ 
+For each spectrum: 
+ 
+1. Use the peak-to-peak amplitude from the velocity transducer and to create a calibration function (a line).  You will need the function generator period and MCS dwell time.  The function should return a velocity in mm/s given a channel number.  Negative velocities should indicate negative energy shifts, and positive velocities should indicate positive energy shifts. 
+ 
+2. Apply your calibration function to the spectrum data sets for all spectra and plot them. 
+ 
+3. Use LMFit and follow the tutorial on fitting a complicated multi-peak function to a data set to fit the absorption peaks to Lorentzians plus a parabolic (2nd order polynomial) background. (Note: you may, if you wish, fit each peak at a time rather than fit the entire spectrum with one complicated curve.) 
+ 
+4. From the fits, obtain the peak center (with uncertainty) and peak width for each peak in each spectrum.  Record these results in tables, one table for each sample.   
+ 
+You will use the peak positions in mm/s to complete the data analysis. 
+ <hr class="ls0">#%% md 
+### Create the calibration function(s) 
+ 
+Think carefully about the motion of the source: where is it at the begining of the scan?  which direction is it moving?  
+ 
+Think carefully about the dwell time and how long an MCS cycle takes.  (One cycle is a run through all channels.)  At which channel is the velocity zero?  Which channel would have the highest velocity forward and which would have the highest velocity in reverse.  Once you know this, you create a line that interpolates between these points.  <hr class="ls0">#%% 
+</span><span class="s2"># Python &quot;dictionary&quot; to hold the peak-to-peak velocity transducer readings, in mV</span>
+<span class="s2"># You supply values and write the function.</span>
+
+<span class="s0">Vpp </span><span class="s3">= {</span><span class="s4">'Fe'</span><span class="s3">:</span><span class="s5">50.2</span><span class="s3">, </span><span class="s4">'Nitroprusside'</span><span class="s3">:</span><span class="s5">30.8</span><span class="s3">, </span><span class="s4">'Fe2O3'</span><span class="s3">:</span><span class="s5">75.2</span><span class="s3">}</span>
+<span class="s0">Vpp</span><span class="s3">[</span><span class="s4">'Fe2O3'</span><span class="s3">]  </span><span class="s2"># Should print the value for the labeled sample</span>
+<hr class="ls0"><span class="s0">#%% md 
+#### Write the calibration function 
+ 
+Fill in the details below. 
+ <hr class="ls0">#%% 
+</span>
+<span class="s0">Conversion_const </span><span class="s3">= </span><span class="s5">.295</span><span class="s2"># Enter the conversion constant for the transducer in mm/s/(mV)</span>
+
+<span class="s2"># Converts a single channel into the velocity</span>
+<span class="s2"># Parameters:</span>
+<span class="s2"># - Chan: What channel is wanted</span>
+<span class="s2"># Returns:</span>
+<span class="s2"># - Velocity at that channel</span>
+<span class="s1">def </span><span class="s0">velocity_cal</span><span class="s3">(</span><span class="s0">chan</span><span class="s3">, </span><span class="s0">Vpp</span><span class="s3">=</span><span class="s5">50.0</span><span class="s3">, </span><span class="s0">conv</span><span class="s3">=</span><span class="s0">Conversion_const</span><span class="s3">, </span><span class="s0">dwell</span><span class="s3">=</span><span class="s5">5.0e-4</span><span class="s3">, </span><span class="s0">period</span><span class="s3">=</span><span class="s5">1.00</span><span class="s3">):</span>
+    <span class="s2"># '''</span>
+    <span class="s2"># Velocity calibration function.  Converts channel number 'chan' to velocity with sign</span>
+    <span class="s2"># based on the measured peak-to-peak voltage from the velocity transducer 'Vpp' (in mV),</span>
+    <span class="s2"># the transducer conversion constant 'conv' (in (mm/s)/mV), the channel dwell time </span>
+    <span class="s2"># 'dwell' (in s), and the drive period 'period' (in s).  </span>
+    <span class="s2"># '''</span>
+     <span class="s2"># converts to time</span>
+    <span class="s0">run </span><span class="s3">= </span><span class="s5">.5 </span><span class="s3">* </span><span class="s0">period</span>
+    <span class="s0">slope </span><span class="s3">= (</span><span class="s0">Vpp </span><span class="s3">* </span><span class="s0">conv</span><span class="s3">) * </span><span class="s0">dwell </span><span class="s3">/ </span><span class="s0">run</span>
+    <span class="s0">intercept </span><span class="s3">= (- </span><span class="s0">Vpp </span><span class="s3">* </span><span class="s0">conv</span><span class="s3">) / </span><span class="s5">2 </span>
+    <span class="s2"># voltage = slope * time + init</span>
+
+    <span class="s2"># You fill in the details so that the return value below is correct</span>
+    <span class="s1">return</span><span class="s3">(</span><span class="s0">intercept </span><span class="s3">+ </span><span class="s0">slope</span><span class="s3">*(</span><span class="s0">chan</span><span class="s3">+</span><span class="s5">0.5</span><span class="s3">)) </span><span class="s2"># slight correction to place velocity at middle of dwell time (1/2 channel)</span>
+
+<span class="s0">a_channel </span><span class="s3">= </span><span class="s5">250</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">&quot;Velocity at channel {} = {:4g} mm/s&quot;</span><span class="s3">.</span><span class="s0">format</span><span class="s3">(</span><span class="s0">a_channel</span><span class="s3">, </span><span class="s0">velocity_cal</span><span class="s3">(</span><span class="s0">a_channel</span><span class="s3">,</span><span class="s0">Vpp</span><span class="s3">=</span><span class="s0">Vpp</span><span class="s3">[</span><span class="s4">'Fe'</span><span class="s3">])))</span>
+<hr class="ls0"><span class="s0">#%% md 
+### Work on the first datafile 
+ 
+Read in the first data file and then apply the calibration to convert channel numbers to velocity.  Plot the result. 
+ 
+**Note:** 
+ 
+The calibration, if done correctly, will flip the x-axis of the data set.  Assuming you are doing this on a column in a Pandas dataframe (the default when you read a csv file with `pd.read_csv()`) then the following will reorder the channel array so that the low index is on the left of the plot and the high index is on the right: 
+ 
+`Fe_velocity = velocity_cal(Fe['Chan'],Vpp['Fe']).sort_values()` 
+ 
+where `velocity_cal()` is the calibration function, `Fe['Chan']` is the data from the **Channel** column and `Vpp['Fe']` is the peak-to-peak voltage from the velocity transducer measurement.  The method attached to the end reorders the array from lowest to highest. 
+ 
+***However I recommend the following.***  Just add another column to the dataframe which holds the converted channels-to-velocity.  This makes it easier to deal with slices of the array.  In other words do this: 
+ 
+`Fe['velocity'] = velocity_cal(Fe['Chan'],Vpp['Fe'])` 
+ 
+Then you can reference the original channels when you need to, but pass the velocity to the fitting routines when you need to get results in mm/s. 
+ <hr class="ls0">#%% md 
+#### Read in the data file 
+ 
+The raw data files are tab separated two-column files with a one-line header that does not matter for multichannel scaling files.  You need to skip the header and name the columns to create a dataframe. 
+ 
+Use the **Pandas** `read_csv()` function to read the raw data file from the Norland MCA as follows: 
+ 
+    Fe = pd.read_csv('enriched_Fe_data.txt',header=0,names=['Chan','Counts'],sep='\t') 
+     
+The dataframe will be named `Fe`  with columns `Fe['Chan']` ad `Fe['Counts']`.  <hr class="ls0">#%% 
+</span>
+<span class="s0">Fe </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">read_csv</span><span class="s3">(</span><span class="s4">'./Data Collected/fe57.tsv'</span><span class="s3">,</span><span class="s0">header</span><span class="s3">=</span><span class="s5">0</span><span class="s3">,</span><span class="s0">names</span><span class="s3">=[</span><span class="s4">'Chan'</span><span class="s3">,</span><span class="s4">'Counts'</span><span class="s3">],</span><span class="s0">sep</span><span class="s3">=</span><span class="s4">'</span><span class="s1">\t</span><span class="s4">'</span><span class="s3">)</span>
+<span class="s0">Fe</span>
+
+<hr class="ls0"><span class="s0">#%% md 
+Make a plot to check that it looks right. <hr class="ls0">#%% 
+</span><span class="s2"># Create a velocity column, as described above</span>
+<span class="s0">Fe</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">] = </span><span class="s0">velocity_cal</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Chan'</span><span class="s3">],</span><span class="s0">Vpp</span><span class="s3">[</span><span class="s4">'Fe'</span><span class="s3">])</span>
+
+<span class="s2"># Sanity plot</span>
+<span class="s0">myfig </span><span class="s3">= </span><span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">12</span><span class="s3">,</span><span class="s5">9</span><span class="s3">))</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">xlabel</span><span class="s3">(</span><span class="s4">r'Velocity (mm/s)'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">ylabel</span><span class="s3">(</span><span class="s4">r'Counts'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">title</span><span class="s3">(</span><span class="s4">'Mossbauer Data for Enriched Iron Sample'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">],</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">],</span><span class="s4">'.'</span><span class="s3">)</span><span class="s0">;</span>
+
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">savefig</span><span class="s3">(</span><span class="s4">&quot;./output/fenofit&quot;</span><span class="s3">)</span>
+
+<hr class="ls0"><span class="s0">#%% md 
+Next, plot against the column index to be able to esitmate a slice.  Take the slice and plot it to check. (these plots do not need to have axis labels, or be particularly big.) 
+ 
+You will also want to plot against the velocity array in order to estimate the fitting parameter start values. <hr class="ls0">#%% 
+plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">],</span><span class="s4">'.'</span><span class="s3">)</span><span class="s0">;</span><hr class="ls0"><span class="s0">#%% 
+</span><span class="s2"># %matplotlib widget</span>
+<span class="s0">Index </span><span class="s3">= </span><span class="s0">list</span><span class="s3">(</span><span class="s0">range</span><span class="s3">(</span><span class="s5">0</span><span class="s3">,</span><span class="s5">380</span><span class="s3">)) </span><span class="s2"># FIRST SLICE</span>
+
+<span class="s0">myfig </span><span class="s3">= </span><span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">12</span><span class="s3">,</span><span class="s5">9</span><span class="s3">))</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">],</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">],</span><span class="s4">'.'</span><span class="s3">)</span><span class="s0">;</span><hr class="ls0"><span class="s0">#%% md 
+### Fit the slice to the model 
+ 
+Now you should be reday to apply the procedure described in the **Composite Model Demo - Mossbauer** notebook. 
+ 
+Below is a reminder of the basic steps. <hr class="ls0">#%% md 
+### Make the model 
+ 
+The model fit will consist of two Lorentzian peaks and a quadratic background. 
+ 
+The background fuction has the form 
+$$f(x;a,b,c) = ax^2 + bx + c\;.$$ 
+ 
+The Lorentzian lineshape has the form 
+$$f(x;A,\mu,\sigma) = \frac{A}{\pi}\left[\frac{\sigma}{(x-\mu)^2 + \sigma^2}\right]\;.$$  
+ 
+Note that the height of the peak at the center ($x=\mu$) is equal to $\frac{A}{\pi\sigma}$ and that the full-width at half-maximum is $2\sigma$. <hr class="ls0">#%% 
+</span><span class="s2"># Import a gaussian peak and second order polynomial for background</span>
+
+<span class="s1">from </span><span class="s0">lmfit</span><span class="s3">.</span><span class="s0">models </span><span class="s1">import </span><span class="s0">QuadraticModel</span><span class="s3">, </span><span class="s0">LorentzianModel</span>
+
+<span class="s2"># create an instance of the model</span>
+<span class="s2"># Note use of prefixes to keep parameters separate</span>
+<span class="s0">model1 </span><span class="s3">= </span><span class="s0">QuadraticModel</span><span class="s3">() + </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p1_'</span><span class="s3">) + </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p2_'</span><span class="s3">)</span>
+
+<span class="s0">model </span><span class="s3">= </span><span class="s0">model1</span>
+
+<span class="s0">params </span><span class="s3">= </span><span class="s0">model</span><span class="s3">.</span><span class="s0">make_params</span><span class="s3">()</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">'parameter names: {}'</span><span class="s3">.</span><span class="s0">format</span><span class="s3">(</span><span class="s0">model</span><span class="s3">.</span><span class="s0">param_names</span><span class="s3">))</span><hr class="ls0"><span class="s0">#%% md 
+### Set the fit parameter starting points 
+ 
+The first peak is shown as an example. <hr class="ls0">#%% 
+params</span><span class="s3">[</span><span class="s4">'p1_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">5.361</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">700.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">3</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">720.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span><hr class="ls0"><span class="s0">#%% md 
+Then fit.  The code below is an example.  Note the use of wieghts from Poisson statistics of counting and also the commands to resize the plot from the fitting routine. <hr class="ls0">#%% 
+model_fit </span><span class="s3">= </span><span class="s0">model</span><span class="s3">.</span><span class="s0">fit</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">], </span><span class="s0">params</span><span class="s3">, </span><span class="s0">x</span><span class="s3">=</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">], </span><span class="s0">weights</span><span class="s3">=</span><span class="s5">1</span><span class="s3">/</span><span class="s0">np</span><span class="s3">.</span><span class="s0">sqrt</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">]))</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s0">model_fit</span><span class="s3">.</span><span class="s0">fit_report</span><span class="s3">(</span><span class="s0">show_correl</span><span class="s3">=</span><span class="s1">False</span><span class="s3">))</span>
+
+
+<span class="s0">myfig</span><span class="s3">=</span><span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">15</span><span class="s3">,</span><span class="s5">15</span><span class="s3">))</span>
+<span class="s0">model_fit</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">fig</span><span class="s3">=</span><span class="s0">myfig</span><span class="s3">)</span><span class="s0">;</span><hr class="ls0"><span class="s0">#%% md 
+#### Have you succeeded with the above? 
+ 
+If not,  try to fix it before mving on. If so, do the following: 
+1. Save your current parameters 
+2. Then 
+   * Add another peak by expanding your slice or 
+   * Choose a different slice and fit the peaks there 
+3. Save your parameters and repeat. 
+ 
+Your goal is to get good values of the peak locations. 
+ 
+(When I did it, I added peaks, two at a time, until I got a fit for the whole scan.) <hr class="ls0">#%% 
+</span><span class="s2"># Next Slice 0-680</span>
+
+<span class="s2">## Find the Slice</span>
+<span class="s2"># %matplotlib widget</span>
+<span class="s3">%</span><span class="s0">matplotlib inline</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">],</span><span class="s4">'.'</span><span class="s3">)</span><span class="s0">;</span>
+
+<span class="s0">Index </span><span class="s3">= </span><span class="s0">list</span><span class="s3">(</span><span class="s0">range</span><span class="s3">(</span><span class="s5">0</span><span class="s3">,</span><span class="s5">680</span><span class="s3">)) </span><span class="s2"># NOTE HERE</span>
+
+<span class="s2"># myfig = plt.figure(figsize=(12,9))</span>
+<span class="s2"># plt.grid()</span>
+<span class="s2"># plt.plot(Fe['velocity'][Index],Fe['Counts'][Index],'.');</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s4">'parameter names: {}'</span><span class="s3">.</span><span class="s0">format</span><span class="s3">(</span><span class="s0">model</span><span class="s3">.</span><span class="s0">param_names</span><span class="s3">))</span>
+
+<span class="s2">## Fit the curve</span>
+
+<span class="s0">model2 </span><span class="s3">= </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p3_'</span><span class="s3">) + </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p4_'</span><span class="s3">)</span>
+<span class="s0">model </span><span class="s3">= </span><span class="s0">model1 </span><span class="s3">+ </span><span class="s0">model2</span>
+
+
+<span class="s0">params </span><span class="s3">= </span><span class="s0">model</span><span class="s3">.</span><span class="s0">make_params</span><span class="s3">()</span>
+<span class="s2">### From the first one:</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">5.361</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">700.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">3</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">720.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<span class="s2">### The parameters needed for the next 2</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p3_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">0.834</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p3_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">450.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p3_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p4_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s5">.91</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p4_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">450.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p4_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<hr class="ls0"><span class="s0">#%% 
+</span><span class="s2">## Last one hopefully?</span>
+
+<span class="s2">## Find the Slice</span>
+<span class="s2"># %matplotlib widget</span>
+<span class="s2"># %matplotlib inline</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">()</span>
+<span class="s2"># plt.plot(Fe['Counts'],'.');</span>
+
+<span class="s0">Index </span><span class="s3">= </span><span class="s0">list</span><span class="s3">(</span><span class="s0">range</span><span class="s3">(</span><span class="s5">0</span><span class="s3">,</span><span class="s0">len</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">)))</span>
+
+<span class="s0">myfig </span><span class="s3">= </span><span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">12</span><span class="s3">,</span><span class="s5">9</span><span class="s3">))</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">],</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">],</span><span class="s4">'.'</span><span class="s3">)</span><span class="s0">;</span>
+
+<hr class="ls0"><span class="s0">#%% 
+</span><span class="s2">## Fit the curve</span>
+
+<span class="s0">model3 </span><span class="s3">= </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p5_'</span><span class="s3">) + </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p6_'</span><span class="s3">)</span>
+<span class="s0">model </span><span class="s3">= </span><span class="s0">model1 </span><span class="s3">+ </span><span class="s0">model2 </span><span class="s3">+ </span><span class="s0">model3</span>
+
+<span class="s0">params </span><span class="s3">= </span><span class="s0">model</span><span class="s3">.</span><span class="s0">make_params</span><span class="s3">()</span>
+
+<span class="s2">### From the first one:</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">5.361</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">700.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">3</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">720.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<span class="s2">### The parameters from the second slice</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p3_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">0.834</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p3_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">450.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p3_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p4_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s5">.91</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p4_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">450.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p4_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<span class="s2">### The parameters from the final slice</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p5_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s5">3.2</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p5_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">350.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p5_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p6_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s5">5.6</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p6_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">400.0</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p6_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span><hr class="ls0"><span class="s0">#%% 
+</span>
+<span class="s2">## Eventually the fitting:</span>
+<span class="s0">model_fit </span><span class="s3">= </span><span class="s0">model</span><span class="s3">.</span><span class="s0">fit</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">], </span><span class="s0">params</span><span class="s3">, </span><span class="s0">x</span><span class="s3">=</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">], </span><span class="s0">weights</span><span class="s3">=</span><span class="s5">1</span><span class="s3">/</span><span class="s0">np</span><span class="s3">.</span><span class="s0">sqrt</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">]))</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s0">model_fit</span><span class="s3">.</span><span class="s0">fit_report</span><span class="s3">(</span><span class="s0">show_correl</span><span class="s3">=</span><span class="s1">False</span><span class="s3">))</span>
+
+<span class="s0">myfig</span><span class="s3">=</span><span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">15</span><span class="s3">,</span><span class="s5">15</span><span class="s3">))</span>
+<span class="s0">model_fit</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">fig</span><span class="s3">=</span><span class="s0">myfig</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">savefig</span><span class="s3">(</span><span class="s4">&quot;output.png&quot;</span><span class="s3">)</span><hr class="ls0"><span class="s0">#%% 
+Index </span><span class="s3">= </span><span class="s0">list</span><span class="s3">(</span><span class="s0">range</span><span class="s3">(</span><span class="s5">0</span><span class="s3">,</span><span class="s0">len</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">)))</span>
+
+<span class="s0">model_fit </span><span class="s3">= </span><span class="s0">model</span><span class="s3">.</span><span class="s0">fit</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">], </span><span class="s0">params</span><span class="s3">, </span><span class="s0">x</span><span class="s3">=</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">], </span><span class="s0">weights</span><span class="s3">=</span><span class="s5">1</span><span class="s3">/</span><span class="s0">np</span><span class="s3">.</span><span class="s0">sqrt</span><span class="s3">(</span><span class="s0">Fe</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">]))</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s0">model_fit</span><span class="s3">.</span><span class="s0">fit_report</span><span class="s3">(</span><span class="s0">show_correl</span><span class="s3">=</span><span class="s1">False</span><span class="s3">))</span><hr class="ls0"><span class="s0">#%% 
+</span>
+<span class="s0">myfig</span><span class="s3">=</span><span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">15</span><span class="s3">,</span><span class="s5">15</span><span class="s3">))</span>
+<span class="s0">model_fit</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">fig</span><span class="s3">=</span><span class="s0">myfig</span><span class="s3">)</span><hr class="ls0"><span class="s0">#%% 
+</span><hr class="ls0"><span class="s0">#%% 
+</span><hr class="ls0"><span class="s0">#%% md 
+### Save the peak centers 
+ 
+When you have obtained the best values, save the peak parameters.  I like to make a dataframe.  Here is one way to iterate over the parameters after they have been saved to extract the peak locations and uncertainties and make a table. <hr class="ls0">#%% 
+</span><span class="s2"># Save the parameters from the best fit</span>
+<span class="s0">Fe_params </span><span class="s3">= </span><span class="s0">model_fit</span><span class="s3">.</span><span class="s0">params</span>
+
+<span class="s0">Fe_peaks </span><span class="s3">= []</span>
+<span class="s1">for </span><span class="s0">parm </span><span class="s1">in </span><span class="s0">Fe_params</span><span class="s3">:</span>
+    <span class="s1">if </span><span class="s0">parm</span><span class="s3">.</span><span class="s0">endswith</span><span class="s3">(</span><span class="s4">'center'</span><span class="s3">): </span>
+        <span class="s0">Fe_peaks</span><span class="s3">.</span><span class="s0">append</span><span class="s3">(</span><span class="s0">unc</span><span class="s3">.</span><span class="s0">ufloat</span><span class="s3">(</span><span class="s0">Fe_params</span><span class="s3">[</span><span class="s0">parm</span><span class="s3">].</span><span class="s0">value</span><span class="s3">, </span><span class="s0">Fe_params</span><span class="s3">[</span><span class="s0">parm</span><span class="s3">].</span><span class="s0">stderr</span><span class="s3">))</span><hr class="ls0"><span class="s0">#%% 
+Fe_peaks_df </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">DataFrame</span><span class="s3">()</span>
+<span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">'Number'</span><span class="s3">] = [</span><span class="s5">1</span><span class="s3">,</span><span class="s5">2</span><span class="s3">,</span><span class="s5">3</span><span class="s3">,</span><span class="s5">4</span><span class="s3">,</span><span class="s5">5</span><span class="s3">,</span><span class="s5">6</span><span class="s3">]</span>
+<span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">'Location (mm/s)'</span><span class="s3">] = </span><span class="s0">Fe_peaks</span>
+<span class="s0">Fe_peaks_df</span><hr class="ls0"><span class="s0">#%% 
+</span>
+<hr class="ls0"><span class="s0">#%% md 
+## Repeat the above procedure for the other data files. 
+ 
+Remember: your goal here is a list of the best-fit peak locations in mm/s units for each data run. <hr class="ls0">#%% md 
+## Nitroprusside Analysis: <hr class="ls0">#%% 
+</span><span class="s2">## Add as many cells as you need.</span>
+
+<span class="s2"># First we read</span>
+<span class="s0">prus </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">read_csv</span><span class="s3">(</span><span class="s4">'./Data Collected/nitroprusside_30.80mV.tsv'</span><span class="s3">,</span><span class="s0">header</span><span class="s3">=</span><span class="s5">0</span><span class="s3">,</span><span class="s0">names</span><span class="s3">=[</span><span class="s4">'Chan'</span><span class="s3">,</span><span class="s4">'Counts'</span><span class="s3">],</span><span class="s0">sep</span><span class="s3">=</span><span class="s4">'</span><span class="s1">\t</span><span class="s4">'</span><span class="s3">)</span>
+<span class="s0">prus</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">] = </span><span class="s0">velocity_cal</span><span class="s3">(</span><span class="s0">prus</span><span class="s3">[</span><span class="s4">'Chan'</span><span class="s3">],</span><span class="s0">Vpp</span><span class="s3">[</span><span class="s4">'Nitroprusside'</span><span class="s3">])</span>
+
+<span class="s2"># Next, we create a sanity/peakfinding plot (using widget to find the values if needed)</span>
+<span class="s2"># %matplotlib widget</span>
+
+<span class="s0">myfig </span><span class="s3">= </span><span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">12</span><span class="s3">,</span><span class="s5">9</span><span class="s3">))</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">xlabel</span><span class="s3">(</span><span class="s4">r'Velocity (mm/s)'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">ylabel</span><span class="s3">(</span><span class="s4">r'Counts'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">title</span><span class="s3">(</span><span class="s4">'Mossbauer Data for Nitroprusside'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">prus</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">],</span><span class="s0">prus</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">],</span><span class="s4">'.'</span><span class="s3">)</span><span class="s0">;</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">savefig</span><span class="s3">(</span><span class="s4">&quot;output/nitroprussidenofit.png&quot;</span><span class="s3">)</span>
+<hr class="ls0"><span class="s0">#%% 
+</span><span class="s2">## Now to prepare params.</span>
+<span class="s0">model </span><span class="s3">= </span><span class="s0">QuadraticModel</span><span class="s3">() + </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p1_'</span><span class="s3">) + </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p2_'</span><span class="s3">)</span>
+<span class="s0">params </span><span class="s3">= </span><span class="s0">model</span><span class="s3">.</span><span class="s0">make_params</span><span class="s3">()</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">params</span><span class="s3">)</span>
+<span class="s0">Index </span><span class="s3">= </span><span class="s0">list</span><span class="s3">(</span><span class="s0">range</span><span class="s3">(</span><span class="s5">0</span><span class="s3">,</span><span class="s0">len</span><span class="s3">(</span><span class="s0">prus</span><span class="s3">)))</span>
+
+
+<span class="s2"># Fit Parameters!</span>
+<span class="s2">### From the first peak:</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">0.55</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">1764</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+<span class="s2">### From the second peak:</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s5">1.2</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">2034</span><span class="s3">*</span><span class="s5">.15</span><span class="s3">*</span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+<span class="s2"># Final Fitting</span>
+<span class="s0">model_fit </span><span class="s3">= </span><span class="s0">model</span><span class="s3">.</span><span class="s0">fit</span><span class="s3">(</span><span class="s0">prus</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">], </span><span class="s0">params</span><span class="s3">, </span><span class="s0">x</span><span class="s3">=</span><span class="s0">prus</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">], </span><span class="s0">weights</span><span class="s3">=</span><span class="s5">1</span><span class="s3">/</span><span class="s0">np</span><span class="s3">.</span><span class="s0">sqrt</span><span class="s3">(</span><span class="s0">prus</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">]))</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">model_fit</span><span class="s3">.</span><span class="s0">fit_report</span><span class="s3">(</span><span class="s0">show_correl</span><span class="s3">=</span><span class="s1">False</span><span class="s3">))</span>
+<span class="s0">myfig</span><span class="s3">=</span><span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">15</span><span class="s3">,</span><span class="s5">15</span><span class="s3">))</span>
+<span class="s0">model_fit</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">fig</span><span class="s3">=</span><span class="s0">myfig</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">savefig</span><span class="s3">(</span><span class="s4">&quot;./output/pruside.png&quot;</span><span class="s3">)</span>
+
+
+<span class="s2"># Save the parameters from the best fit</span>
+<span class="s0">prus_params </span><span class="s3">= </span><span class="s0">model_fit</span><span class="s3">.</span><span class="s0">params</span>
+<span class="s0">prus_peaks </span><span class="s3">= []</span>
+<span class="s1">for </span><span class="s0">parm </span><span class="s1">in </span><span class="s0">prus_params</span><span class="s3">:</span>
+    <span class="s1">if </span><span class="s0">parm</span><span class="s3">.</span><span class="s0">endswith</span><span class="s3">(</span><span class="s4">'center'</span><span class="s3">):</span>
+        <span class="s0">prus_peaks</span><span class="s3">.</span><span class="s0">append</span><span class="s3">(</span><span class="s0">unc</span><span class="s3">.</span><span class="s0">ufloat</span><span class="s3">(</span><span class="s0">prus_params</span><span class="s3">[</span><span class="s0">parm</span><span class="s3">].</span><span class="s0">value</span><span class="s3">, </span><span class="s0">prus_params</span><span class="s3">[</span><span class="s0">parm</span><span class="s3">].</span><span class="s0">stderr</span><span class="s3">))</span>
+
+
+
+<span class="s0">prus_peaks_df </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">DataFrame</span><span class="s3">()</span>
+<span class="s0">prus_peaks_df</span><span class="s3">[</span><span class="s4">'Number'</span><span class="s3">] = [</span><span class="s5">1</span><span class="s3">,</span><span class="s5">2</span><span class="s3">]</span>
+<span class="s0">prus_peaks_df</span><span class="s3">[</span><span class="s4">'Location (mm/s)'</span><span class="s3">] = </span><span class="s0">prus_peaks</span>
+<span class="s0">prus_peaks_df</span>
+
+
+
+
+
+
+<hr class="ls0"><span class="s0">#%% md 
+## Hemitite Analysis <hr class="ls0">#%% 
+</span><span class="s2">## Add as many cells as you need.</span>
+
+<span class="s2"># First we read</span>
+<span class="s0">hem </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">read_csv</span><span class="s3">(</span><span class="s4">'./Data Collected/Fe2O3_74.35mV.tsv'</span><span class="s3">, </span><span class="s0">header</span><span class="s3">=</span><span class="s5">0</span><span class="s3">, </span><span class="s0">names</span><span class="s3">=[</span><span class="s4">'Chan'</span><span class="s3">, </span><span class="s4">'Counts'</span><span class="s3">], </span><span class="s0">sep</span><span class="s3">=</span><span class="s4">'</span><span class="s1">\t</span><span class="s4">'</span><span class="s3">)</span>
+<span class="s0">hem</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">] = </span><span class="s0">velocity_cal</span><span class="s3">(</span><span class="s0">hem</span><span class="s3">[</span><span class="s4">'Chan'</span><span class="s3">], </span><span class="s0">Vpp</span><span class="s3">[</span><span class="s4">'Fe2O3'</span><span class="s3">])</span>
+
+<span class="s2"># Next, we create a sanity/peakfinding plot</span>
+<span class="s2"># %matplotlib widget</span>
+
+<span class="s0">myfig </span><span class="s3">= </span><span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">12</span><span class="s3">, </span><span class="s5">5</span><span class="s3">))</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">grid</span><span class="s3">()</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">xlabel</span><span class="s3">(</span><span class="s4">r'Velocity (mm/s)'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">ylabel</span><span class="s3">(</span><span class="s4">r'Counts'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">title</span><span class="s3">(</span><span class="s4">'Mossbauer Data for Hematite'</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">hem</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">], </span><span class="s0">hem</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">], </span><span class="s4">'.'</span><span class="s3">)</span>
+
+<span class="s2"># # Sanity plot</span>
+<span class="s2"># myfig = plt.figure(figsize=(12,9))</span>
+<span class="s2"># plt.grid()</span>
+<span class="s2"># plt.xlabel(r'Velocity (mm/s)')</span>
+<span class="s2"># plt.ylabel(r'Counts')</span>
+<span class="s2"># plt.title('Mossbauer Data for Enriched Iron Sample')</span>
+<span class="s2"># plt.plot(Fe['velocity'],Fe['Counts'],'.');</span>
+<span class="s2">#</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">savefig</span><span class="s3">(</span><span class="s4">&quot;./output/hemanofit&quot;</span><span class="s3">)</span><span class="s0">;</span>
+
+
+<hr class="ls0"><span class="s0">#%% 
+</span>
+<span class="s2">## Now to prepare params.</span>
+<span class="s0">model </span><span class="s3">= (</span><span class="s0">QuadraticModel</span><span class="s3">() + </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p1_'</span><span class="s3">)</span>
+         <span class="s3">+ </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p2_'</span><span class="s3">) + </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p3_'</span><span class="s3">)</span>
+         <span class="s3">+ </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p4_'</span><span class="s3">) + </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p5_'</span><span class="s3">)</span>
+         <span class="s3">+ </span><span class="s0">LorentzianModel</span><span class="s3">(</span><span class="s0">prefix</span><span class="s3">=</span><span class="s4">'p6_'</span><span class="s3">))</span>
+<span class="s0">params </span><span class="s3">= </span><span class="s0">model</span><span class="s3">.</span><span class="s0">make_params</span><span class="s3">()</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">params</span><span class="s3">)</span>
+<span class="s0">Index </span><span class="s3">= </span><span class="s0">list</span><span class="s3">(</span><span class="s0">range</span><span class="s3">(</span><span class="s5">0</span><span class="s3">, </span><span class="s0">len</span><span class="s3">(</span><span class="s0">hem</span><span class="s3">)))</span>
+
+<span class="s2"># Fit Parameters!</span>
+<span class="s2">### From the first peak:</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">8.70</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-(</span><span class="s5">2.14</span><span class="s3">-</span><span class="s5">1.99</span><span class="s3">)*</span><span class="s5">1e5 </span><span class="s3">* </span><span class="s5">.15 </span><span class="s3">* </span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p1_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+<span class="s2">### From the second peak:</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">5.42</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-(</span><span class="s5">2.17</span><span class="s3">-</span><span class="s5">2.05</span><span class="s3">)*</span><span class="s5">1e5  </span><span class="s3">* </span><span class="s5">.15 </span><span class="s3">* </span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p2_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+<span class="s2">### From the third peak:</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p3_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-</span><span class="s5">1.83</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p3_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-(</span><span class="s5">2.18</span><span class="s3">-</span><span class="s5">2.12</span><span class="s3">)*</span><span class="s5">1e5 </span><span class="s3">* </span><span class="s5">.15 </span><span class="s3">* </span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p3_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+<span class="s2">### From the fourth peak:</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p4_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s5">0.83</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p4_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-(</span><span class="s5">2.18</span><span class="s3">-</span><span class="s5">2.13</span><span class="s3">)*</span><span class="s5">1e5</span><span class="s3">* </span><span class="s5">.15 </span><span class="s3">* </span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p4_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+<span class="s2">### From the fifth peak:</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p5_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s5">4.43</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p5_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=-(</span><span class="s5">2.17</span><span class="s3">-</span><span class="s5">2.06</span><span class="s3">)*</span><span class="s5">1e5 </span><span class="s3">* </span><span class="s5">.15 </span><span class="s3">* </span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p5_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+<span class="s2">### From the sixth peak:</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p6_center'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s5">8.24</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p6_amplitude'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">= -(</span><span class="s5">2.14</span><span class="s3">-</span><span class="s5">1.99</span><span class="s3">)*</span><span class="s5">1e5 </span><span class="s3">* </span><span class="s5">.15 </span><span class="s3">* </span><span class="s0">np</span><span class="s3">.</span><span class="s0">pi</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+<span class="s0">valSigma </span><span class="s3">= </span><span class="s5">.15</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">valSigma</span><span class="s3">)</span>
+<span class="s0">params</span><span class="s3">[</span><span class="s4">'p6_sigma'</span><span class="s3">].</span><span class="s0">set</span><span class="s3">(</span><span class="s0">value</span><span class="s3">=</span><span class="s0">valSigma</span><span class="s3">, </span><span class="s0">vary</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+
+
+<span class="s2"># Final Fitting</span>
+<span class="s0">model_fit </span><span class="s3">= </span><span class="s0">model</span><span class="s3">.</span><span class="s0">fit</span><span class="s3">(</span><span class="s0">hem</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">], </span><span class="s0">params</span><span class="s3">, </span><span class="s0">x</span><span class="s3">=</span><span class="s0">hem</span><span class="s3">[</span><span class="s4">'velocity'</span><span class="s3">], </span><span class="s0">weights</span><span class="s3">=</span><span class="s5">1 </span><span class="s3">/ </span><span class="s0">np</span><span class="s3">.</span><span class="s0">sqrt</span><span class="s3">(</span><span class="s0">hem</span><span class="s3">[</span><span class="s4">'Counts'</span><span class="s3">][</span><span class="s0">Index</span><span class="s3">]))</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">model_fit</span><span class="s3">.</span><span class="s0">fit_report</span><span class="s3">(</span><span class="s0">show_correl</span><span class="s3">=</span><span class="s1">False</span><span class="s3">))</span>
+<span class="s0">myfig </span><span class="s3">= </span><span class="s0">plt</span><span class="s3">.</span><span class="s0">figure</span><span class="s3">(</span><span class="s0">figsize</span><span class="s3">=(</span><span class="s5">15</span><span class="s3">, </span><span class="s5">15</span><span class="s3">))</span>
+<span class="s0">model_fit</span><span class="s3">.</span><span class="s0">plot</span><span class="s3">(</span><span class="s0">fig</span><span class="s3">=</span><span class="s0">myfig</span><span class="s3">)</span>
+<span class="s0">plt</span><span class="s3">.</span><span class="s0">savefig</span><span class="s3">(</span><span class="s4">&quot;./output/hem.png&quot;</span><span class="s3">)</span>
+
+
+<span class="s2"># Save the parameters from the best fit</span>
+<span class="s0">hem_params </span><span class="s3">= </span><span class="s0">model_fit</span><span class="s3">.</span><span class="s0">params</span>
+<span class="s0">hem_peaks </span><span class="s3">= []</span>
+<span class="s1">for </span><span class="s0">parm </span><span class="s1">in </span><span class="s0">hem_params</span><span class="s3">:</span>
+    <span class="s1">if </span><span class="s0">parm</span><span class="s3">.</span><span class="s0">endswith</span><span class="s3">(</span><span class="s4">'center'</span><span class="s3">):</span>
+        <span class="s0">hem_peaks</span><span class="s3">.</span><span class="s0">append</span><span class="s3">(</span><span class="s0">unc</span><span class="s3">.</span><span class="s0">ufloat</span><span class="s3">(</span><span class="s0">Fe_params</span><span class="s3">[</span><span class="s0">parm</span><span class="s3">].</span><span class="s0">value</span><span class="s3">, </span><span class="s0">Fe_params</span><span class="s3">[</span><span class="s0">parm</span><span class="s3">].</span><span class="s0">stderr</span><span class="s3">))</span>
+
+
+
+<span class="s0">hem_peaks_df </span><span class="s3">= </span><span class="s0">pd</span><span class="s3">.</span><span class="s0">DataFrame</span><span class="s3">()</span>
+<span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">'Number'</span><span class="s3">] = [</span><span class="s5">1</span><span class="s3">,</span><span class="s5">2</span><span class="s3">,</span><span class="s5">3</span><span class="s3">,</span><span class="s5">4</span><span class="s3">,</span><span class="s5">5</span><span class="s3">,</span><span class="s5">6</span><span class="s3">]</span>
+<span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">'Location (mm/s)'</span><span class="s3">] = </span><span class="s0">hem_peaks</span>
+<span class="s0">hem_peaks_df</span>
+
+<hr class="ls0"><span class="s0">#%% md 
+## Calculate final results 
+ 
+Carry out the analysis below that is relevant to your sample types <hr class="ls0">#%% md 
+### Enriched iron and Natural iron 
+ 
+1. Start with isomer shift $\delta$. This is just the average of all peak locations. The number would be relative to the source Co-57/Rh 
+ 
+2. Next calculate the magnetic field $B$ and excited-state moment $\mu_e$ from the enriched-foil data.   
+ 
+For the field, we first need the transitions that start from different ground states and end at the same excited states.  There are two pairs of these, one pair ends at -1/2: peaks 2 &amp; 4, and the other ends at +1/2, peaks 1 and 3. The differences between these will give $\mu_gB$.  From this get $B$ with $\mu_g = +0.09062\mu_n$ where $\mu_n = 3.1525\times10^{-8}$ eV/T  
+ 
+You will need to convert to energy with Doppler formula 
+$$\frac{\Delta E}{E} = \frac{v}{c}$$ 
+where $E = 14.412497$ keV. 
+ 
+To get the excited state moment, you will need the excited state splitting. These pairs that start at the same ground state but end at different excited states: peaks 0-1, 1-2, 3-4, and 4-5. 
+ 
+3. From this calculate the excited state moment $\mu_e$, and compare to $-0.1549\mu_n$.  
+ 
+4. Repeat the above for any other natural iron samples you may have. (Don't forget to apply the correct calibration constant for each one.) <hr class="ls0">#%% md 
+#### Magnetic Field $(B)$ Calculation 
+ 
+First, the groud state is split into $\pm 1/2$. To get $\mu_gB$, we first get the pairs of peaks that start at different ground states but end at the difference in the excited states. 
+ 
+Recall that our peak data is stored in `Fe_peaks_df` <hr class="ls0">#%% 
+</span><span class="s2">## Lets make this easier, setting the index to be the number:</span>
+<span class="s0">Fe_peaks_df</span><span class="s3">.</span><span class="s0">set_index</span><span class="s3">(</span><span class="s4">'Number'</span><span class="s3">, </span><span class="s0">inplace</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+<span class="s2">## The peak data:</span>
+<span class="s0">Fe_peaks_df</span><hr class="ls0"><span class="s0">#%% 
+mu_g </span><span class="s3">= </span><span class="s5">0.09062</span>
+
+<span class="s1">def </span><span class="s0">conv_to_eng</span><span class="s3">(</span><span class="s0">ve</span><span class="s3">):</span>
+    <span class="s1">return </span><span class="s0">ve</span><span class="s3">/</span><span class="s0">sp</span><span class="s3">.</span><span class="s0">constants</span><span class="s3">.</span><span class="s0">c </span><span class="s3">* </span><span class="s5">14.412497e3 </span><span class="s2">#E</span>
+
+<span class="s0">diff2_4 </span><span class="s3">= </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">4</span><span class="s3">] - </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">2</span><span class="s3">]</span>
+<span class="s0">diff1_3 </span><span class="s3">= </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">3</span><span class="s3">] - </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">1</span><span class="s3">]</span>
+<span class="s0">E_g </span><span class="s3">= </span><span class="s0">conv_to_eng</span><span class="s3">(</span><span class="s0">diff1_3 </span><span class="s3">- </span><span class="s0">diff2_4</span><span class="s3">)</span>
+<span class="s0">mu_n </span><span class="s3">= </span><span class="s5">3.1525e-8</span>
+<span class="s0">B </span><span class="s3">= </span><span class="s0">E_g </span><span class="s3">/ (</span><span class="s5">0.09062 </span><span class="s3">* </span><span class="s0">mu_n</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;First pair: </span><span class="s1">{</span><span class="s0">diff2_4</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;Second pair: </span><span class="s1">{</span><span class="s0">diff1_3</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;E_g: </span><span class="s1">{</span><span class="s0">E_g</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;B: </span><span class="s1">{</span><span class="s0">B</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+
+<hr class="ls0"><span class="s0">#%% md 
+next we need to find the excited state moments. First, we should calculate the differences in all of the excited state peaks, they are: 
+ 
+- 1 &amp; 2 
+- 2 &amp; 3 
+- 4 &amp; 5 
+- 5 &amp; 6 <hr class="ls0">#%% 
+diff1_2 </span><span class="s3">= </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">2</span><span class="s3">] - </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">1</span><span class="s3">]</span>
+<span class="s0">diff2_3 </span><span class="s3">= </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">3</span><span class="s3">] - </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">2</span><span class="s3">]</span>
+<span class="s0">diff4_5 </span><span class="s3">= </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">5</span><span class="s3">] - </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">4</span><span class="s3">]</span>
+<span class="s0">diff5_6 </span><span class="s3">= </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">6</span><span class="s3">] - </span><span class="s0">Fe_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">5</span><span class="s3">]</span>
+
+<span class="s0">excited_state_calc </span><span class="s3">= [</span><span class="s0">diff1_2</span><span class="s3">, </span><span class="s0">diff2_3</span><span class="s3">, </span><span class="s0">diff4_5</span><span class="s3">, </span><span class="s0">diff5_6</span><span class="s3">]</span>
+<span class="s0">excited_state_calc</span><hr class="ls0"><span class="s0">#%% 
+</span>
+<span class="s0">excited_state </span><span class="s3">= </span><span class="s0">sum</span><span class="s3">(</span><span class="s0">excited_state_calc</span><span class="s3">)/</span><span class="s0">len</span><span class="s3">(</span><span class="s0">excited_state_calc</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s0">excited_state</span><span class="s3">)</span>
+<span class="s0">mu_e </span><span class="s3">= </span><span class="s0">conv_to_eng</span><span class="s3">(</span><span class="s0">excited_state</span><span class="s3">)/</span><span class="s0">B</span>
+
+<span class="s0">print</span><span class="s3">(</span><span class="s0">mu_e</span><span class="s3">/</span><span class="s0">mu_n</span><span class="s3">)</span><hr class="ls0"><span class="s0">#%% md 
+### Sodium nitroprusside~ Quadrapole Splitting 
+ 
+Need isomer shift relative to Fe foil and quadrupole split, both in mm/s units. 
+ 
+Compare results to literature values of $-0.257$ mm/s for the isomer shift, relative to Fe and $1.7048$ mm/s for the quadrupole splitting. <hr class="ls0">#%% md 
+#### Isomer Shift 
+The isomer shift of this reaction is calculated by taking an average of the two peaks. This should show the center of the two peaks, and how far it is away from the origin. 
+Recall from above that our peaks after line fitting are stored in `hem_peaks_df`: 
+ <hr class="ls0">#%% 
+</span><span class="s2"># hem_peaks_df['Energy Shift'] = hem_peaks_df['Location (mm/s)'].apply(energy_shift)</span>
+<span class="s2"># hem_peaks_df</span>
+
+<span class="s0">isomer_shift </span><span class="s3">= </span><span class="s0">prus_peaks_df</span><span class="s3">[</span><span class="s4">'Location (mm/s)'</span><span class="s3">].</span><span class="s0">values</span><span class="s3">.</span><span class="s0">mean</span><span class="s3">()</span>
+<span class="s2"># isomer_shift</span>
+<hr class="ls0"><span class="s0">#%% md 
+#### Quadrapole Shift 
+ 
+The quadrapole shift in this senario would just be difference in the two peaks. <hr class="ls0">#%% 
+quadrapole_shift </span><span class="s3">= </span><span class="s0">prus_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">1</span><span class="s3">] - </span><span class="s0">prus_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">0</span><span class="s3">]</span>
+<span class="s0">quadrapole_shift</span><hr class="ls0"><span class="s0">#%% md 
+### Hematite (Rust) 
+ 
+Analysis proceeds in same manner as for enriched Fe foil. Find $\delta$, $B$, $\mu_e$.  
+ 
+#### Then find quadrupole splitting 
+ 
+From Figure 2 in Kistner &amp; Sunyar (PRL Vol. 4, p.412, 1960) peaks 0-1 are closer together than 1-2 by $2\varepsilon$ and peaks 4-5 are farther apart than peaks 3-4.  To find $\varepsilon$ we note that (4-5)-(0-1) should be equal to $4\varepsilon$. 
+ 
+Compare to following results in Kistner &amp; Sunyar: 
+* G.S Splitting = $6.11\pm0.05$ mm/s 
+* E.S. splitting = $3.45\pm0.03$ mm/s 
+* Isomer shift relative to Fe = $0.47\pm0.03$ mm/s 
+* Quadrupole splitting $\varepsilon = 0.12\pm0.03$ mm/s <hr class="ls0">#%% md 
+To start, we will evaluate the given equation to find the Quadrupole $\varepsilon$: <hr class="ls0">#%% 
+</span>
+<span class="s2"># Now to calculations</span>
+<span class="s0">diff5_4 </span><span class="s3">= </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">4</span><span class="s3">] - </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">5</span><span class="s3">]</span>
+<span class="s0">diff1_0 </span><span class="s3">= </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">0</span><span class="s3">] - </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">1</span><span class="s3">]</span>
+
+<span class="s0">eps </span><span class="s3">= (</span><span class="s0">diff5_4 </span><span class="s3">- </span><span class="s0">diff1_0</span><span class="s3">) / </span><span class="s5">4</span>
+
+<span class="s0">eps</span><hr class="ls0"><span class="s0">#%% md 
+Using previous methods, we can also find the other values as well: <hr class="ls0">#%% 
+</span><span class="s2"># Isomer shift</span>
+<span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">values</span><span class="s3">.</span><span class="s0">mean</span><span class="s3">()</span><hr class="ls0"><span class="s0">#%% 
+</span><span class="s2"># GS and ES:</span>
+<span class="s2"># From the Panopto Recording</span>
+
+<span class="s2"># Again, to make things easier</span>
+<span class="s0">hem_peaks_df</span><span class="s3">.</span><span class="s0">set_index</span><span class="s3">(</span><span class="s4">'Number'</span><span class="s3">, </span><span class="s0">inplace</span><span class="s3">=</span><span class="s1">True</span><span class="s3">)</span>
+
+<span class="s2"># GS</span>
+<span class="s0">diff2_4 </span><span class="s3">= </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">4</span><span class="s3">] - </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">4</span><span class="s3">]</span>
+<span class="s0">diff3_5 </span><span class="s3">= </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">5</span><span class="s3">] - </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">3</span><span class="s3">]</span>
+<span class="s0">gs </span><span class="s3">= </span><span class="s0">diff3_5 </span><span class="s3">- </span><span class="s0">diff2_4</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;gs: </span><span class="s1">{</span><span class="s0">gs</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span>
+
+<span class="s2"># ES</span>
+<span class="s0">diff1_2 </span><span class="s3">= </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">2</span><span class="s3">] - </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">1</span><span class="s3">]</span>
+<span class="s0">diff2_3 </span><span class="s3">= </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">3</span><span class="s3">] - </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">2</span><span class="s3">]</span>
+<span class="s0">diff4_5 </span><span class="s3">= </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">5</span><span class="s3">] - </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">4</span><span class="s3">]</span>
+<span class="s0">diff5_6 </span><span class="s3">= </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">6</span><span class="s3">] - </span><span class="s0">hem_peaks_df</span><span class="s3">[</span><span class="s4">&quot;Location (mm/s)&quot;</span><span class="s3">].</span><span class="s0">loc</span><span class="s3">[</span><span class="s5">6</span><span class="s3">]</span>
+
+<span class="s0">excited_state_calc </span><span class="s3">= [</span><span class="s0">diff1_2</span><span class="s3">, </span><span class="s0">diff2_3</span><span class="s3">, </span><span class="s0">diff4_5</span><span class="s3">, </span><span class="s0">diff5_6</span><span class="s3">]</span>
+<span class="s0">excited_state </span><span class="s3">= </span><span class="s0">sum</span><span class="s3">(</span><span class="s0">excited_state_calc</span><span class="s3">)/</span><span class="s0">len</span><span class="s3">(</span><span class="s0">excited_state_calc</span><span class="s3">)</span>
+<span class="s0">print</span><span class="s3">(</span><span class="s4">f&quot;excited_state: </span><span class="s1">{</span><span class="s0">excited_state</span><span class="s1">}</span><span class="s4">&quot;</span><span class="s3">)</span></pre>
+</body>
+</html>
