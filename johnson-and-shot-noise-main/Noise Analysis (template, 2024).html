@@ -1,0 +1,2413 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Nathan Chien">
+
+<title>Johnson and Shot Noise Analysis</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="Noise Analysis (template, 2024)_files/libs/clipboard/clipboard.min.js"></script>
+<script src="Noise Analysis (template, 2024)_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="Noise Analysis (template, 2024)_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="Noise Analysis (template, 2024)_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="Noise Analysis (template, 2024)_files/libs/quarto-html/popper.min.js"></script>
+<script src="Noise Analysis (template, 2024)_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="Noise Analysis (template, 2024)_files/libs/quarto-html/anchor.min.js"></script>
+<link href="Noise Analysis (template, 2024)_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="Noise Analysis (template, 2024)_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="Noise Analysis (template, 2024)_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="Noise Analysis (template, 2024)_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="Noise Analysis (template, 2024)_files/libs/bootstrap/bootstrap-ef166407d74830010260db35e4ac84ea.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#johnson-and-shot-noise-analysis-2024" id="toc-johnson-and-shot-noise-analysis-2024" class="nav-link active" data-scroll-target="#johnson-and-shot-noise-analysis-2024">Johnson and Shot Noise Analysis (2024)</a>
+  <ul class="collapse">
+  <li><a href="#johnson-noise-analysis" id="toc-johnson-noise-analysis" class="nav-link" data-scroll-target="#johnson-noise-analysis">Johnson Noise Analysis</a></li>
+  <li><a href="#exercise-1---data-reduction" id="toc-exercise-1---data-reduction" class="nav-link" data-scroll-target="#exercise-1---data-reduction">Exercise 1 - Data reduction</a>
+  <ul class="collapse">
+  <li><a href="#massage-the-raw-data" id="toc-massage-the-raw-data" class="nav-link" data-scroll-target="#massage-the-raw-data">Massage the raw data</a></li>
+  <li><a href="#plot-the-reduced-data" id="toc-plot-the-reduced-data" class="nav-link" data-scroll-target="#plot-the-reduced-data">Plot the reduced data</a></li>
+  <li><a href="#include-the-other-data" id="toc-include-the-other-data" class="nav-link" data-scroll-target="#include-the-other-data">Include the other data</a></li>
+  </ul></li>
+  <li><a href="#exercise-2" id="toc-exercise-2" class="nav-link" data-scroll-target="#exercise-2">Exercise 2</a>
+  <ul class="collapse">
+  <li><a href="#part-b.-fit-the-modified-data" id="toc-part-b.-fit-the-modified-data" class="nav-link" data-scroll-target="#part-b.-fit-the-modified-data">Part b. Fit the modified data</a></li>
+  <li><a href="#first-for-the-300k-data" id="toc-first-for-the-300k-data" class="nav-link" data-scroll-target="#first-for-the-300k-data">First, for the 300k Data:</a></li>
+  <li><a href="#for-the-77k-data" id="toc-for-the-77k-data" class="nav-link" data-scroll-target="#for-the-77k-data">For the 77k Data</a></li>
+  <li><a href="#for-the-diff-data" id="toc-for-the-diff-data" class="nav-link" data-scroll-target="#for-the-diff-data">For the Diff Data</a></li>
+  <li><a href="#calculate-a-boltzmann-constant" id="toc-calculate-a-boltzmann-constant" class="nav-link" data-scroll-target="#calculate-a-boltzmann-constant">Calculate a Boltzmann constant</a></li>
+  <li><a href="#k-data" id="toc-k-data" class="nav-link" data-scroll-target="#k-data">77 K data</a></li>
+  <li><a href="#plot-everything-on-one-graph" id="toc-plot-everything-on-one-graph" class="nav-link" data-scroll-target="#plot-everything-on-one-graph">Plot everything on one graph</a></li>
+  <li><a href="#part-c." id="toc-part-c." class="nav-link" data-scroll-target="#part-c.">Part c.</a></li>
+  </ul></li>
+  <li><a href="#exercise-3-noise-figure" id="toc-exercise-3-noise-figure" class="nav-link" data-scroll-target="#exercise-3-noise-figure">Exercise 3: Noise Figure</a></li>
+  <li><a href="#shot-noise-analysis" id="toc-shot-noise-analysis" class="nav-link" data-scroll-target="#shot-noise-analysis">Shot Noise Analysis</a>
+  <ul class="collapse">
+  <li><a href="#read-in-the-data" id="toc-read-in-the-data" class="nav-link" data-scroll-target="#read-in-the-data">Read in the data</a></li>
+  <li><a href="#plot-the-raw-data" id="toc-plot-the-raw-data" class="nav-link" data-scroll-target="#plot-the-raw-data">Plot the raw data</a></li>
+  <li><a href="#calculate-v2_rms" id="toc-calculate-v2_rms" class="nav-link" data-scroll-target="#calculate-v2_rms">Calculate <span class="math inline">\(V^2_{rms}\)</span></a></li>
+  <li><a href="#then-fit-it-and-plot-it" id="toc-then-fit-it-and-plot-it" class="nav-link" data-scroll-target="#then-fit-it-and-plot-it">Then fit it and plot it</a></li>
+  <li><a href="#calculate-electron-charge" id="toc-calculate-electron-charge" class="nav-link" data-scroll-target="#calculate-electron-charge">Calculate Electron Charge</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="Noise-Analysis--template,-2024-.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Johnson and Shot Noise Analysis</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Nathan Chien </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="johnson-and-shot-noise-analysis-2024" class="level1">
+<h1>Johnson and Shot Noise Analysis (2024)</h1>
+<section id="this-template-assumes-use-of-the-new-shot-noise-source" class="level4">
+<h4 class="anchored" data-anchor-id="this-template-assumes-use-of-the-new-shot-noise-source">This template assumes use of the new shot noise source</h4>
+<p>Use this template to carry out the analysis tasks for the Noise experiment. For reference, here are links to recommended Python resources: the <a href="https://jakevdp.github.io/WhirlwindTourOfPython/">Whirlwind Tour of Python</a> and the <a href="https://jakevdp.github.io/PythonDataScienceHandbook/">Python Data Science Handbook</a> both by Jake VanderPlas. ## First, import some packages</p>
+<p>This is a good idea at the beginning of your notebook to include the packages that you will need. We will use those shown below here. A brief description: * <code>numpy</code> is the foundational package for Python numerical work. It extends and speeds up array operations beyond standard Python, and it includes almost all math functions that you would need for example <code>sqrt()</code> (square root) or <code>cos()</code> (cosine). These would be written in code as <code>np.sqrt()</code> or <code>np.cos()</code>. * <code>scipy</code> is a huge collection of scientific data analysis functions, routines, physicical constants, etc. This is the second most used package for scientific work. Here we will use the physical constants library, <code>scipy.constants</code>. Documentation is at <a href="https://docs.scipy.org/doc/scipy/reference/">SciPy.org</a> with the constants subpackage at https://docs.scipy.org/doc/scipy/reference/constants.html. * <code>uncertainties</code> is a very useful small package that simplifies uncertainty propagation and printing out of quantities with uncertainty. Documentation is at https://pythonhosted.org/uncertainties/ * <code>matplotlib</code> is <em>the</em> standard plotting package for scientific Python. We will use a subset called <code>pyplot</code> which is modeled after the plotting functions used in MATLAB. The last line below, <code>%matplotlib inline</code>, simply forces the plots to appear within the notebook. * <code>pandas</code> is a large data science package. It’s main feature is a set of methods to create and manipulate a “DataFrame,” which is an enlargement of the idea of an array. I plays well with NumPy and other packages. We will use it mainly as a way to read files into data sets in an easy way.</p>
+<p>We will also use the <a href="https://lmfit.github.io/lmfit-py/">LMFit</a> package to make line fits. This will be explained later in the notebook.</p>
+<div id="cell-3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:31.149901392Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:31.083505062Z&quot;}}" data-execution_count="226">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> json.decoder <span class="im">import</span> NaN</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Run this cell with Shift-Enter, and wait until the</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># asterisk changes to a number, i.e., [*] becomes [1]</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.constants <span class="im">as</span> const</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> uncertainties <span class="im">as</span> unc</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> re <span class="im">as</span> re</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> mplcyberpunk</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.f2py.auxfuncs <span class="im">import</span> throw_error</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.ma.core <span class="im">import</span> size</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> uncertainties <span class="im">import</span> ufloat</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> uncertainties.unumpy <span class="im">import</span> uarray</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="op">%</span>matplotlib inline</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>plt.style.use(<span class="st">'cyberpunk'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="johnson-noise-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="johnson-noise-analysis">Johnson Noise Analysis</h2>
+</section>
+<section id="exercise-1---data-reduction" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-1---data-reduction">Exercise 1 - Data reduction</h2>
+<blockquote class="blockquote">
+<h3 id="read-in-the-raw-data" class="anchored">Read in the raw data</h3>
+<p><strong>About Data Files:</strong> This template assumes that the data files will have one of two types of structure: 1. If you took 5 readings (or so) for each measurement and plan to average them here, the assumed structure is one where each spreadsheet column is named with the resistance (for &gt; Johnson Noise), e.g., “9.99k”, or the emission current (for shot noise), e.g., “0.1047mA” and each row of the data is one trial with each cell containing the measured RMS voltage &gt; in the frequency band; 2. If you opted instead to simply take one longer-average time measurement for each resistance (or emission current), then the assumed structure would be two columns, the first &gt; column headed with resistance (or emission current) and the second column headed with the measured RMS voltage in the frequency band.</p>
+<p>Below, these structures are treated by the designation “1” or “2”. Stucture type “1” requires a little more effort to reduce, but offers the option of calculating data point &gt; uncertainties.</p>
+<p><strong>Advice:</strong> Use the <strong>Pandas</strong> function <code>read_csv()</code> to pull the file into a Pandas Dataframe, like this:</p>
+<pre><code>johnson_294 = pd.read_csv('Johnson_294K.csv')</code></pre>
+</blockquote>
+<blockquote class="blockquote">
+<p>If the last line in the code cell is the name of the DataFrame (<code>johnson_294</code>), the notebook cell will print a nice table.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>You may obtain the arrays for each column by using the column label, e.g., <code>johnson_294['40.0k']</code> is the array of the first column.</p>
+</blockquote>
+<p>For Johnson shot noise, we went about taking data manually and averaging it.</p>
+<div id="cell-5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:31.338168684Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:31.180395444Z&quot;}}" data-execution_count="227">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This is to import the data as a raw pd dataframe.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>johnson_294 <span class="op">=</span> pd.read_csv(<span class="st">'rawData/Johnson data - Johnson_Room_jupyter.csv'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>johnson_294  <span class="co"># DataFrame name on the last line spits out a table</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="227">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">40k</th>
+<th data-quarto-table-cell-role="th">20k</th>
+<th data-quarto-table-cell-role="th">15k</th>
+<th data-quarto-table-cell-role="th">9.99k</th>
+<th data-quarto-table-cell-role="th">7.5k</th>
+<th data-quarto-table-cell-role="th">4.99k</th>
+<th data-quarto-table-cell-role="th">2.5k</th>
+<th data-quarto-table-cell-role="th">1.0k</th>
+<th data-quarto-table-cell-role="th">0.0K</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.007909</td>
+<td>0.005793</td>
+<td>0.005050</td>
+<td>0.004211</td>
+<td>0.003701</td>
+<td>0.002997</td>
+<td>0.002196</td>
+<td>0.001457</td>
+<td>0.000620</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0.007962</td>
+<td>0.005885</td>
+<td>0.005047</td>
+<td>0.004180</td>
+<td>0.003633</td>
+<td>0.003006</td>
+<td>0.002207</td>
+<td>0.001484</td>
+<td>0.000624</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.007796</td>
+<td>0.005765</td>
+<td>0.005031</td>
+<td>0.004170</td>
+<td>0.003611</td>
+<td>0.002980</td>
+<td>0.002148</td>
+<td>0.001482</td>
+<td>0.000615</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>0.007801</td>
+<td>0.005848</td>
+<td>0.005163</td>
+<td>0.004190</td>
+<td>0.003652</td>
+<td>0.003037</td>
+<td>0.002192</td>
+<td>0.001496</td>
+<td>0.000629</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0.007821</td>
+<td>0.005864</td>
+<td>0.005107</td>
+<td>0.004182</td>
+<td>0.003747</td>
+<td>0.002973</td>
+<td>0.002194</td>
+<td>0.001473</td>
+<td>0.000625</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<section id="massage-the-raw-data" class="level3">
+<h3 class="anchored" data-anchor-id="massage-the-raw-data">Massage the raw data</h3>
+<blockquote class="blockquote">
+<h4 id="for-data-structure-type-1.-if-you-have-a-type-2-data-structure-skip-to-plot-the-reduced-data-below." class="anchored">For data structure type “1.” If you have a type “2” data structure, skip to “Plot the Reduced Data” below.</h4>
+<p>Create new arrays that have averages of the 5 readings at each value of the resistance and their standard deviation. Then extract the resistance from the column label and make &gt; into a number. Finally, build a new DataFrame that has these arrays. Below is an example. The example shows a number of useful operations. Study it carefully.</p>
+<p>We will use a loop to build the new arrays first, and then combine them into a DataFrame.</p>
+<p>You can extract the resistance from the column heading. Here is one way to do it, assuming <code>col_label</code> is the column label:</p>
+<pre><code>resistance = float(col_label.split('k')[0])</code></pre>
+<p>This splits the label at <code>k</code> and puts the number into the first (0) position as a string. <code>float()</code> converts the number string to a flaoting point number.</p>
+<p>Then calculate the mean and standard deviation using the built-in methods for the arrays.</p>
+</blockquote>
+<div id="cell-7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:31.733053960Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:31.386659886Z&quot;}}" data-execution_count="228">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Study this example.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># These lines create empty arrays that will be filled.</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>Rs <span class="op">=</span> np.zeros(<span class="dv">0</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>Vs <span class="op">=</span> np.zeros(<span class="dv">0</span>)</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>Stds <span class="op">=</span> np.zeros(<span class="dv">0</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># This is a standard Python loop.  Note the 'for &lt;item&gt; in &lt;list&gt;:' construction</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co"># The '.columns' is an array of column labels in the DataFrame</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> label <span class="kw">in</span> johnson_294.columns:</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="co"># obtain the numerical part of the column label</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># R = float(label.split('k')[0])</span></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    R <span class="op">=</span> <span class="bu">float</span>(re.split(<span class="vs">r"</span><span class="fu">(?i)</span><span class="vs">k"</span>, label)[<span class="dv">0</span>])</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate the mean (average) of the numbers in the column</span></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    mean <span class="op">=</span> johnson_294[label].mean()</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate the standard deviation of the same numbers</span></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    std <span class="op">=</span> johnson_294[label].std()</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    <span class="co"># These lines add each calculated result to the associated array</span></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    Rs <span class="op">=</span> np.append(Rs,R)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    Vs <span class="op">=</span> np.append(Vs,mean)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    Stds <span class="op">=</span> np.append(Stds,std)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>Rs</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize an empty DataFrame</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>J_294 <span class="op">=</span> pd.DataFrame()</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="co"># These lines add columns to the DataFrame</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>J_294[<span class="st">'R (ohms)'</span>] <span class="op">=</span> Rs<span class="op">*</span><span class="fl">1000.0</span> <span class="co"># Convert resistance from kohms to ohms</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>J_294[<span class="st">'Vrms (V)'</span>] <span class="op">=</span> Vs</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>J_294[<span class="st">'DV (V)'</span>] <span class="op">=</span> Stds</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Here is another way to do the same thing</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>J_294_ver2 <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">'R (ohms)'</span>: Rs<span class="op">*</span><span class="fl">1e3</span>,</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Vrms (V)'</span>: Vs,</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    <span class="st">'DV (V)'</span>: Stds</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="co"># Finally display the results.  Name of DataFrame on last line spits a table</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a><span class="co"># J_294</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>J_294_ver2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="228">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">R (ohms)</th>
+<th data-quarto-table-cell-role="th">Vrms (V)</th>
+<th data-quarto-table-cell-role="th">DV (V)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>40000.0</td>
+<td>0.007858</td>
+<td>0.000074</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>20000.0</td>
+<td>0.005831</td>
+<td>0.000050</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>15000.0</td>
+<td>0.005080</td>
+<td>0.000055</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>9990.0</td>
+<td>0.004187</td>
+<td>0.000015</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>7500.0</td>
+<td>0.003669</td>
+<td>0.000055</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>4990.0</td>
+<td>0.002999</td>
+<td>0.000025</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>2500.0</td>
+<td>0.002187</td>
+<td>0.000023</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>1000.0</td>
+<td>0.001478</td>
+<td>0.000015</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>0.0</td>
+<td>0.000623</td>
+<td>0.000005</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<section id="repeat-for-the-other-temperature" class="level4">
+<h4 class="anchored" data-anchor-id="repeat-for-the-other-temperature">Repeat for the other temperature</h4>
+<blockquote class="blockquote">
+<p>Now you try it for the other temperature data set.</p>
+</blockquote>
+<div id="cell-9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:32.098510563Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:31.919810217Z&quot;}}" data-execution_count="229">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Read in the data set and display it</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>johnson_ln2 <span class="op">=</span> pd.read_csv(<span class="st">"rawData/Johnson data - Johnson_ln2_jupyter.csv"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>johnson_ln2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="229">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">40k</th>
+<th data-quarto-table-cell-role="th">20k</th>
+<th data-quarto-table-cell-role="th">15k</th>
+<th data-quarto-table-cell-role="th">9.99k</th>
+<th data-quarto-table-cell-role="th">7.5k</th>
+<th data-quarto-table-cell-role="th">4.99k</th>
+<th data-quarto-table-cell-role="th">2.5k</th>
+<th data-quarto-table-cell-role="th">1.0k</th>
+<th data-quarto-table-cell-role="th">0.0k</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.004315</td>
+<td>0.003218</td>
+<td>0.002730</td>
+<td>0.002270</td>
+<td>0.002021</td>
+<td>0.001781</td>
+<td>0.001299</td>
+<td>0.000932</td>
+<td>0.000627</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0.004319</td>
+<td>0.003168</td>
+<td>0.002759</td>
+<td>0.002272</td>
+<td>0.001994</td>
+<td>0.001776</td>
+<td>0.001246</td>
+<td>0.000927</td>
+<td>0.000627</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.004299</td>
+<td>0.003138</td>
+<td>0.002712</td>
+<td>0.002264</td>
+<td>0.001972</td>
+<td>0.001746</td>
+<td>0.001243</td>
+<td>0.000947</td>
+<td>0.000617</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>0.004424</td>
+<td>0.003201</td>
+<td>0.002749</td>
+<td>0.002202</td>
+<td>0.002000</td>
+<td>0.001729</td>
+<td>0.001265</td>
+<td>0.000941</td>
+<td>0.000623</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0.004292</td>
+<td>0.003161</td>
+<td>0.002731</td>
+<td>0.002289</td>
+<td>0.002032</td>
+<td>0.001765</td>
+<td>0.001260</td>
+<td>0.000944</td>
+<td>0.000628</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>0.004286</td>
+<td>0.003098</td>
+<td>0.002715</td>
+<td>0.002254</td>
+<td>0.001981</td>
+<td>0.001732</td>
+<td>0.001245</td>
+<td>0.000929</td>
+<td>0.000622</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-10" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:32.749587337Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:32.587355183Z&quot;}}" data-execution_count="230">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Calculate the averages of each column.</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">## extract the values of the resistance.  </span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">## Build a (new) dataframe and display it to see if it looks right.</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># These lines create empty arrays that will be filled.</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>Rs <span class="op">=</span> np.zeros(<span class="dv">0</span>)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>Vs <span class="op">=</span> np.zeros(<span class="dv">0</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>Stds <span class="op">=</span> np.zeros(<span class="dv">0</span>)</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># This is a standard Python loop.  Note the 'for &lt;item&gt; in &lt;list&gt;:' construction</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co"># The '.columns' is an array of column labels in the DataFrame</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> label <span class="kw">in</span> johnson_ln2.columns:</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># obtain the numerical part of the column label</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># R = float(label.split('k')[0])</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>    R <span class="op">=</span> <span class="bu">float</span>(re.split(<span class="vs">r"</span><span class="fu">(?i)</span><span class="vs">k"</span>, label)[<span class="dv">0</span>])</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate the mean (average) of the numbers in the column</span></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    mean <span class="op">=</span> johnson_ln2[label].mean()</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># calculate the standard deviation of the same numbers</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    std <span class="op">=</span> johnson_ln2[label].std()</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># These lines add each calculated result to the associated array</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    Rs <span class="op">=</span> np.append(Rs,R)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    Vs <span class="op">=</span> np.append(Vs,mean)</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    Stds <span class="op">=</span> np.append(Stds,std)</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>J_ln2 <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    <span class="st">'R (ohms)'</span>: Rs<span class="op">*</span><span class="fl">1e3</span>,</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="st">'Vrms (V)'</span>: Vs,</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    <span class="st">'DV (V)'</span>: Stds</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>J_ln2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="230">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">R (ohms)</th>
+<th data-quarto-table-cell-role="th">Vrms (V)</th>
+<th data-quarto-table-cell-role="th">DV (V)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>40000.0</td>
+<td>0.004322</td>
+<td>0.000051</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>20000.0</td>
+<td>0.003164</td>
+<td>0.000043</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>15000.0</td>
+<td>0.002733</td>
+<td>0.000018</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>9990.0</td>
+<td>0.002258</td>
+<td>0.000030</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>7500.0</td>
+<td>0.002000</td>
+<td>0.000023</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>4990.0</td>
+<td>0.001755</td>
+<td>0.000022</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>2500.0</td>
+<td>0.001260</td>
+<td>0.000021</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>1000.0</td>
+<td>0.000937</td>
+<td>0.000008</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>0.0</td>
+<td>0.000624</td>
+<td>0.000004</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="plot-the-reduced-data" class="level3">
+<h3 class="anchored" data-anchor-id="plot-the-reduced-data">Plot the reduced data</h3>
+<blockquote class="blockquote">
+<p>Plot the data set of <span class="math inline">\(V_{rms}\)</span> vs <span class="math inline">\(R\)</span> to see what it looks like.</p>
+<p>Below, I’ll show how. Study the commands, change them, and see what happens. Hint: study the sections in the <a href="https://jakevdp.github%3E%20.io/PythonDataScienceHandbook/">Python Data Science Handbook</a> on Matplotlib.</p>
+<p>After you make the plot, always look to make sure your data set does not have any weird points. This is a good way to catch bad data and/or mistakes.</p>
+</blockquote>
+<div id="cell-12" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:32.980674462Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:32.970503503Z&quot;}}" data-execution_count="231">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set up plot defaults  This cell only needs to be executed once.</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib <span class="im">as</span> mpl</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>mpl.rcParams[<span class="st">'figure.figsize'</span>] <span class="op">=</span> <span class="fl">10.0</span>,<span class="fl">8.0</span>  <span class="co"># Roughly 11 cm wde by 8 cm high</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>mpl.rcParams[<span class="st">'font.size'</span>] <span class="op">=</span> <span class="fl">12.0</span> <span class="co"># Use 12 point font</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-13" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:33.218678583Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:33.103608669Z&quot;}}" data-execution_count="232">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Plot the data sets on one graph</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co">## Header commands provided</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>fig, ax <span class="op">=</span> plt.subplots()</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>ax.set_title(<span class="st">'Johnson Noise Data'</span>)</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>ax.set_xlabel(<span class="vs">r'Resistance </span><span class="dv">$</span><span class="vs">R</span><span class="dv">$</span><span class="vs"> </span><span class="kw">(</span><span class="dv">$</span><span class="er">\</span><span class="vs">Omega</span><span class="dv">$</span><span class="kw">)</span><span class="vs">'</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>ax.set_ylabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">V_J</span><span class="dv">$</span><span class="vs"> </span><span class="kw">(</span><span class="vs">Vrms</span><span class="kw">)</span><span class="vs">'</span>)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>ax.grid(color<span class="op">=</span><span class="st">'#2A3459'</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.grid() # Turn on the grid</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.title('Johnson Noise Data') # make a plot title</span></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.ylabel(r'$V_J$ (Vrms)') # Make an axis label.  Note the $$ to typeset math</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.xlabel(r'Resistance $R$ ($\Omega$)') #Another axis label</span></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Below shows how to make a plot with error bars.  The errors are multiplied by </span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a><span class="co"># 10 so that the bars are visible. </span></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a><span class="co"># If you have no error bars, simply omit the item 'yerr=J_294['DV (V)']*10'</span></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>ax.errorbar(J_294[<span class="st">'R (ohms)'</span>],J_294[<span class="st">'Vrms (V)'</span>],</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>             yerr<span class="op">=</span>J_294[<span class="st">'DV (V)'</span>]<span class="op">*</span><span class="dv">10</span>,</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>             fmt<span class="op">=</span><span class="st">'o'</span>,label<span class="op">=</span><span class="st">'T = 295K'</span>)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>ax.errorbar(J_ln2[<span class="st">'R (ohms)'</span>], J_ln2[<span class="st">'Vrms (V)'</span>],</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>             yerr<span class="op">=</span>J_ln2[<span class="st">'DV (V)'</span>] <span class="op">*</span> <span class="dv">10</span>,</span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>             fmt<span class="op">=</span><span class="st">'o'</span>, label<span class="op">=</span><span class="st">'T = 77K'</span>)</span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>ax.legend()<span class="op">;</span> <span class="co"># Make a legend</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-8-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="include-the-other-data" class="level3">
+<h3 class="anchored" data-anchor-id="include-the-other-data">Include the other data</h3>
+<blockquote class="blockquote">
+<p>Repeat the lines in the cell above and include another data set so that both the 395K and 77K data are on the same plot.</p>
+</blockquote>
+<div id="cell-15" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:33.373165417Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:33.350016423Z&quot;}}" data-execution_count="233">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">## This code was refactored to above.</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ## Plot the data sets on one graph</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="co"># ## Header commands provided</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a><span class="co"># # Below shows how to make a plot with error bars.  The errors are multiplied by</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co"># # 10 so that the bars are visible.</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="co"># # If you have no error bars, simply omit the item 'yerr=J_294['DV (V)']*10'</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.errorbar(J_ln2['R (ohms)'], J_ln2['Vrms (V)'],</span></span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a><span class="co">#              yerr=J_ln2['DV (V)'] * 10,</span></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="co">#              fmt='o', label='T = 295K')</span></span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a><span class="co"># plt.legend();  # Make a legend</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+</section>
+<section id="exercise-2" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-2">Exercise 2</h2>
+<blockquote class="blockquote">
+<h3 id="part-a.-modify-the-data" class="anchored">Part a. Modify the data</h3>
+</blockquote>
+<blockquote class="blockquote">
+<p>Modify the data arrays to obtain the mean square voltages for each temperature, and also the difference in the (squared) data for the two temperatures, which will help remove the effects of noise in the electronics. <strong>Remember:</strong> You have NumPy/Pandas arrays, so you can do each task with a single line of code.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>Then plot the results, all on one plot so you can compare them visually.</p>
+</blockquote>
+<blockquote class="blockquote">
+<h4 id="for-data-sets-that-have-uncertainties-associated-with-them." class="anchored">For data sets that have uncertainties associated with them.</h4>
+</blockquote>
+<blockquote class="blockquote">
+<p>If you have uncertainties on each data point that you want to carry forward in the analysis, when you square the value, the uncertainty is NOT also squared. Instead it is multiplied by 2 times the |value|. That is, if <span class="math inline">\(\sigma_x\)</span> is the uncertainty in <span class="math inline">\(x\)</span>, the uncertainty in <span class="math inline">\(x^2\)</span> is <span class="math inline">\(\sigma_{x^2} = 2|x|\sigma_x\)</span>.</p>
+</blockquote>
+<blockquote class="blockquote">
+<p>Another way to work out the uncertainties is to first build arrays of uncertainty objects from the data and uncertainty arrays. For example, if the data are in an array called <code>X</code> and the uncertainty (i.e., error bars) are in an array called <code>sigma_X</code>, you can build an uncertainty array as follows:</p>
+</blockquote>
+<blockquote class="blockquote">
+<p># Import uNumPy functions. You could do this in the first cell import uncertainties.unumpy as unp</p>
+<p># Build an uncertainty array uX = unp.uarray(X, sigma_X)</p>
+<p># Square the array, and also propagate uncertainty uX_sqrd = uX*uX</p>
+<p># Access the parts of the uncertainty array. This is necessary for curve fitting uX_sqrd_values = unp.nominal_values(uX_sqrd) uX_sqrd_sigmas = unp.std_devs(uX_sqrd)</p>
+</blockquote>
+<div id="cell-17" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:33.448877242Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:33.409764823Z&quot;}}" data-execution_count="234">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Modify the arrays as specified above</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Lets create the specified data:</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> uncertainties.unumpy <span class="im">as</span> unp</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Lets start by viewing what is in the arrays</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>johnson_294</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="234">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">40k</th>
+<th data-quarto-table-cell-role="th">20k</th>
+<th data-quarto-table-cell-role="th">15k</th>
+<th data-quarto-table-cell-role="th">9.99k</th>
+<th data-quarto-table-cell-role="th">7.5k</th>
+<th data-quarto-table-cell-role="th">4.99k</th>
+<th data-quarto-table-cell-role="th">2.5k</th>
+<th data-quarto-table-cell-role="th">1.0k</th>
+<th data-quarto-table-cell-role="th">0.0K</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.007909</td>
+<td>0.005793</td>
+<td>0.005050</td>
+<td>0.004211</td>
+<td>0.003701</td>
+<td>0.002997</td>
+<td>0.002196</td>
+<td>0.001457</td>
+<td>0.000620</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0.007962</td>
+<td>0.005885</td>
+<td>0.005047</td>
+<td>0.004180</td>
+<td>0.003633</td>
+<td>0.003006</td>
+<td>0.002207</td>
+<td>0.001484</td>
+<td>0.000624</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.007796</td>
+<td>0.005765</td>
+<td>0.005031</td>
+<td>0.004170</td>
+<td>0.003611</td>
+<td>0.002980</td>
+<td>0.002148</td>
+<td>0.001482</td>
+<td>0.000615</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>0.007801</td>
+<td>0.005848</td>
+<td>0.005163</td>
+<td>0.004190</td>
+<td>0.003652</td>
+<td>0.003037</td>
+<td>0.002192</td>
+<td>0.001496</td>
+<td>0.000629</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0.007821</td>
+<td>0.005864</td>
+<td>0.005107</td>
+<td>0.004182</td>
+<td>0.003747</td>
+<td>0.002973</td>
+<td>0.002194</td>
+<td>0.001473</td>
+<td>0.000625</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-19" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:33.755873151Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:33.709232590Z&quot;}}" data-execution_count="235">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's start by forming the uncertainty objects:</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>J_294[<span class="st">'Vrms (V) unc'</span>] <span class="op">=</span> unp.uarray(J_294[<span class="st">'Vrms (V)'</span>], J_294[<span class="st">'DV (V)'</span>])</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>J_ln2[<span class="st">'Vrms (V) unc'</span>] <span class="op">=</span> unp.uarray(J_ln2[<span class="st">'Vrms (V)'</span>], J_ln2[<span class="st">'DV (V)'</span>])</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Now lets square the values</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>J_294[<span class="st">'Vms (V)'</span>] <span class="op">=</span> J_294[<span class="st">'Vrms (V) unc'</span>] <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>J_ln2[<span class="st">'Vms (V)'</span>] <span class="op">=</span> J_ln2[<span class="st">'Vrms (V) unc'</span>] <span class="op">**</span> <span class="dv">2</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Finally lets take the difference of 295k and 77k</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>J_diff <span class="op">=</span> pd.DataFrame({<span class="st">'R (ohms)'</span> : J_294[<span class="st">'R (ohms)'</span>]})</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>J_diff[<span class="st">'Vms (V) diff'</span>] <span class="op">=</span> J_294[<span class="st">'Vms (V)'</span>] <span class="op">-</span> J_ln2[<span class="st">'Vms (V)'</span>]</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>J_294</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>J_diff</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="235">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">R (ohms)</th>
+<th data-quarto-table-cell-role="th">Vms (V) diff</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>40000.0</td>
+<td>(4.31+/-0.12)e-05</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>20000.0</td>
+<td>(2.40+/-0.06)e-05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>15000.0</td>
+<td>(1.83+/-0.06)e-05</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>9990.0</td>
+<td>(1.243+/-0.019)e-05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>7500.0</td>
+<td>(9.5+/-0.4)e-06</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>4990.0</td>
+<td>(5.91+/-0.17)e-06</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>2500.0</td>
+<td>(3.20+/-0.11)e-06</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>1000.0</td>
+<td>(1.31+/-0.05)e-06</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>0.0</td>
+<td>(-1+/-8)e-09</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-20" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.063453346Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:33.917075362Z&quot;}}" data-execution_count="236">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Plot the results</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="co">## Header commands provided to format plot</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="co">## Uncertainties here are also 10xed to be visible on the plot.</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>fig_quad, ax_quad <span class="op">=</span> plt.subplots()</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>ax_quad.grid(color<span class="op">=</span><span class="st">'#2A3459'</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>ax_quad.set_title(<span class="st">'Johnson Noise Data, in Quadrature'</span>)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>ax_quad.set_ylabel(<span class="vs">r'</span><span class="dv">$</span><span class="vs">V</span><span class="dv">^</span><span class="vs">2_J</span><span class="dv">$</span><span class="vs"> </span><span class="kw">(</span><span class="vs">Vrms</span><span class="dv">$^</span><span class="vs">2</span><span class="dv">$</span><span class="kw">)</span><span class="vs">'</span>)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>ax_quad.set_xlabel(<span class="vs">r'Resistance </span><span class="dv">$</span><span class="vs">R</span><span class="dv">$</span><span class="vs"> </span><span class="kw">(</span><span class="dv">$</span><span class="er">\</span><span class="vs">Omega</span><span class="dv">$</span><span class="kw">)</span><span class="vs">'</span>)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a><span class="co">## Add your code here</span></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>ax_quad.errorbar(J_294[<span class="st">'R (ohms)'</span>],</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>                 unp.nominal_values(J_294[<span class="st">'Vms (V)'</span>]),</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>                 unp.std_devs(J_294[<span class="st">'Vms (V)'</span>]) <span class="op">*</span> <span class="dv">10</span>,</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>                 label<span class="op">=</span><span class="st">'T = 295K'</span>, fmt<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>ax_quad.errorbar(J_ln2[<span class="st">'R (ohms)'</span>],</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>                 unp.nominal_values(J_ln2[<span class="st">'Vms (V)'</span>]),</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>                 unp.std_devs(J_ln2[<span class="st">'Vms (V)'</span>]) <span class="op">*</span> <span class="dv">10</span>,</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>                 label<span class="op">=</span><span class="st">'T = 77K'</span>, fmt<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>ax_quad.errorbar(J_diff[<span class="st">'R (ohms)'</span>],</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>                 unp.nominal_values(J_diff[<span class="st">'Vms (V) diff'</span>]),</span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>                 unp.std_devs(J_diff[<span class="st">'Vms (V) diff'</span>]) <span class="op">*</span> <span class="dv">10</span>,</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>                 label<span class="op">=</span><span class="st">'T = diff'</span>, fmt<span class="op">=</span><span class="st">'o'</span>)</span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>ax_quad.legend()<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-13-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="part-b.-fit-the-modified-data" class="level3">
+<h3 class="anchored" data-anchor-id="part-b.-fit-the-modified-data">Part b. Fit the modified data</h3>
+<blockquote class="blockquote">
+<p>To fit the data set to a line, make use of the <strong>LMFit</strong> package. It is a useful add-on to the SciPy fitting functions. This package simplifies fitting data to a variety of standard functions. See the <a href="https://lmfit.github.io/lmfit-py/index.html">Lmfit Documentation</a> for a full discussion. The package is quite powerful, but for basic fitting with common functions, it is very easy to use.</p>
+</blockquote>
+<blockquote class="blockquote">
+<h4 id="example-fitting-a-line" class="anchored">Example: Fitting a line</h4>
+</blockquote>
+<blockquote class="blockquote">
+<p>The example below shows how to use the package to fit data to a line, obtain the fit parameters along with uncertainties, and then plot the data and fit. Execute the cells and study how it works. (Note: the data come from a calibration problem in physics 331)</p>
+</blockquote>
+<div id="cell-22" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.160984750Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.125904485Z&quot;}}" data-execution_count="237">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This cell only creates arrays of x and y data to feed to the fit example in the next cell.</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Calibration Data from a physics 331 experiment.</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># First column is wavelength (nm), second is carriage position (cm)</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>Cal_data <span class="op">=</span> np.array([</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">643.85</span>, <span class="fl">41.43</span>],</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">579.07</span>, <span class="fl">37.24</span>],</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">576.96</span>, <span class="fl">37.11</span>],</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">546.08</span>, <span class="fl">35.10</span>],</span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">508.58</span>, <span class="fl">32.68</span>],</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">479.99</span>, <span class="fl">30.83</span>],</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">467.81</span>, <span class="fl">30.04</span>],</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">435.83</span>, <span class="fl">27.96</span>],</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">404.66</span>, <span class="fl">25.98</span>]])</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Array slicing separates x (position) and y (wavelength)</span></span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Goal of calibration is to be able to feed in a position and obtain a wavelength</span></span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>wavelength <span class="op">=</span> Cal_data[:,<span class="dv">0</span>]</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>position <span class="op">=</span> Cal_data[:,<span class="dv">1</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The following cell executes the fitting calculations.</p>
+<div id="cell-24" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.313753031Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.188195524Z&quot;}}" data-execution_count="238">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># imports a linear fitting model from lmfit  </span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ONLY IMPORT ONCE IN A NOTEBOOK</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> lmfit.models <span class="im">import</span> LinearModel, DimensionalError</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="co"># create an instance of the model</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="co"># You only need to do this once in a notebook</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>line <span class="op">=</span> LinearModel()</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="co"># One must have a guess of the parameters. The guess() method works with most of the standard</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a><span class="co"># lmfit models</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># The return value is a Parameters structure.  See the documentation.</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>param_guess <span class="op">=</span> line.guess(wavelength, x<span class="op">=</span>position)</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co"># The line below executes the fitting process.  The results are returned to "line_fit"</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>line_fit <span class="op">=</span> line.fit(wavelength, param_guess, x<span class="op">=</span>position)</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a><span class="co"># This prints the results in an easy to read form</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(line_fit.fit_report())</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a><span class="co">#Then you can plot the results quickly just to see how it looks using the plot() method</span></span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>line_fit.plot()</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Optional: Change axis labels from default 'X' vs. 'Y'.</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">'Carriage position (cm)'</span>)</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">'Emission wavelength (nm)'</span>)<span class="op">;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 4
+    # data points      = 9
+    # variables        = 2
+    chi-square         = 0.18041902
+    reduced chi-square = 0.02577415
+    Akaike info crit   = -31.1872805
+    Bayesian info crit = -30.7928313
+    R-squared          = 0.99999620
+[[Variables]]
+    slope:      15.4639413 +/- 0.01139807 (0.07%) (init = 15.46394)
+    intercept:  3.20598011 +/- 0.38164182 (11.90%) (init = 3.20598)
+[[Correlations]] (unreported correlations are &lt; 0.100)
+    C(slope, intercept) = -0.9901</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-15-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Fit each to a line and obtain the slope with uncertainty. Plot the data with the fit lines.</p>
+<p>First, I’ll make functions to clean up the coding.</p>
+<div id="cell-26" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.365090282Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.351534223Z&quot;}}" data-execution_count="239">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Defines a function to do the work.  Study it.  If you don't understand how this works,</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="co">## find out by asking questions and or studying the functions in the code.</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> line_fit_and_plot(xdata, ydata, yerr<span class="op">=</span><span class="va">None</span>, model<span class="op">=</span>LinearModel(), xlabel<span class="op">=</span><span class="st">'X'</span>, ylabel<span class="op">=</span><span class="st">'Y'</span>):</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="co">'''</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="co">    Fit a line or curve, and plot/show the fit results.</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a><span class="co">    The function returns a parameters object with the fit parameters</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a><span class="co">    '''</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    param_guess <span class="op">=</span> model.guess(ydata, x<span class="op">=</span>xdata)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (yerr <span class="kw">is</span> <span class="va">None</span>):</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>        model_fit <span class="op">=</span> model.fit(ydata, param_guess, x<span class="op">=</span>xdata)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">else</span>:</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>        model_fit <span class="op">=</span> model.fit(ydata, param_guess, x<span class="op">=</span>xdata, weights<span class="op">=</span><span class="dv">1</span><span class="op">/</span>yerr)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(model_fit.fit_report(show_correl<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    model_fit.plot()</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    plt.xlabel(xlabel)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    plt.ylabel(ylabel)<span class="op">;</span></span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> model_fit.params</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a><span class="co">## This function use the Uncertainties function to make an uncertainty object</span></span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_uslope(params):</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> unc.ufloat(params[<span class="st">'slope'</span>].value, params[<span class="st">'slope'</span>].stderr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Then run the functions.</p>
+</section>
+<section id="first-for-the-300k-data" class="level3">
+<h3 class="anchored" data-anchor-id="first-for-the-300k-data">First, for the 300k Data:</h3>
+<div id="cell-29" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.533881941Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.394661504Z&quot;}}" data-scrolled="false" data-execution_count="240">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Use the functions above to run the fit for the modified 295K data</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="co">## and save the fit parameters.  Then pull out the slope</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co">## Here is how you would use the above functions with the example data:</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the fit</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="co"># example_fit_params = line_fit_and_plot(position,wavelength,</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a><span class="co">#                                        xlabel='Carriage position (cm)',ylabel='Emission wavelength (nm)')</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>J_294_fit_params <span class="op">=</span> line_fit_and_plot(J_294[<span class="st">'R (ohms)'</span>],</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>                                     unp.nominal_values(J_294[<span class="st">'Vms (V)'</span>]),</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>                                     unp.std_devs(J_294[<span class="st">'Vms (V)'</span>]),)</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain the slope and its uncertainty into an uncertainty object</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a><span class="co"># slope_with_uncertainty = get_uslope(example_fit_params)</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>slope_with_uncertainty <span class="op">=</span> get_uslope(J_294_fit_params)</span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Slope = {:.2uP}'</span>.<span class="bu">format</span>(slope_with_uncertainty))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 7
+    # data points      = 9
+    # variables        = 2
+    chi-square         = 42.9965765
+    reduced chi-square = 6.14236807
+    Akaike info crit   = 18.0750633
+    Bayesian info crit = 18.4695124
+    R-squared          = 0.98552059
+[[Variables]]
+    slope:      1.6997e-09 +/- 2.3043e-11 (1.36%) (init = 1.544299e-09)
+    intercept:  3.9117e-07 +/- 1.5978e-08 (4.08%) (init = 1.438028e-06)
+
+Slope = (1.700±0.023)×10⁻⁹</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-17-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="for-the-77k-data" class="level3">
+<h3 class="anchored" data-anchor-id="for-the-77k-data">For the 77k Data</h3>
+<div id="cell-31" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.712560295Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.565134275Z&quot;}}" data-execution_count="241">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>J_ln2_fit_params <span class="op">=</span> line_fit_and_plot(J_ln2[<span class="st">'R (ohms)'</span>],</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                                     unp.nominal_values(J_ln2[<span class="st">'Vms (V)'</span>]),</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                                     unp.std_devs(J_ln2[<span class="st">'Vms (V)'</span>]),)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain the slope and its uncertainty into an uncertainty object</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="co"># slope_with_uncertainty = get_uslope(example_fit_params)</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>slope_with_uncertainty <span class="op">=</span> get_uslope(J_ln2_fit_params)</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Slope = {:.2uP}'</span>.<span class="bu">format</span>(slope_with_uncertainty))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 7
+    # data points      = 9
+    # variables        = 2
+    chi-square         = 19.9694049
+    reduced chi-square = 2.85277212
+    Akaike info crit   = 11.1727909
+    Bayesian info crit = 11.5672401
+    R-squared          = 0.99715304
+[[Variables]]
+    slope:      4.7755e-10 +/- 7.1432e-12 (1.50%) (init = 4.580018e-10)
+    intercept:  3.9135e-07 +/- 8.4604e-09 (2.16%) (init = 5.496959e-07)
+
+Slope = (4.776±0.071)×10⁻¹⁰</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-18-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="for-the-diff-data" class="level3">
+<h3 class="anchored" data-anchor-id="for-the-diff-data">For the Diff Data</h3>
+<div id="cell-33" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.882573545Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.713948719Z&quot;}}" data-execution_count="242">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Finally for the diff dataset"</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>J_diff_fit_params <span class="op">=</span> line_fit_and_plot(J_diff[<span class="st">'R (ohms)'</span>],</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                                     unp.nominal_values(J_diff[<span class="st">'Vms (V) diff'</span>]),</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                                     unp.std_devs(J_diff[<span class="st">'Vms (V) diff'</span>]),)</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Obtain the slope and its uncertainty into an uncertainty object</span></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="co"># slope_with_uncertainty = get_uslope(example_fit_params)</span></span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>slope_with_uncertainty <span class="op">=</span> get_uslope(J_diff_fit_params)</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Slope = {:.2uP}'</span>.<span class="bu">format</span>(slope_with_uncertainty))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 7
+    # data points      = 9
+    # variables        = 2
+    chi-square         = 30.0805152
+    reduced chi-square = 4.29721646
+    Akaike info crit   = 14.8598775
+    Bayesian info crit = 15.2543266
+    R-squared          = 0.97983080
+[[Variables]]
+    slope:      1.2139e-09 +/- 2.3781e-11 (1.96%) (init = 1.086297e-09)
+    intercept:  2.6615e-09 +/- 1.7086e-08 (641.99%) (init = 8.883324e-07)
+
+Slope = (1.214±0.024)×10⁻⁹</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-19-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="calculate-a-boltzmann-constant" class="level3">
+<h3 class="anchored" data-anchor-id="calculate-a-boltzmann-constant">Calculate a Boltzmann constant</h3>
+<p>From the results, calculate the implied Boltzmann constant (with uncertainty).</p>
+<p>Revised gain of low-noise amplifier <span class="math inline">\(G=10122\pm35\)</span> (as of July 2021, DBP)</p>
+<div id="cell-35" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.913309962Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.884532129Z&quot;}}" data-execution_count="243">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Create uncertainties objects for the other quantities.  The first two are examples</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>T_295 <span class="op">=</span> unc.ufloat(<span class="fl">295.0</span>,<span class="fl">1.0</span>) <span class="co"># K</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>G <span class="op">=</span> unc.ufloat(<span class="dv">10122</span>,<span class="dv">35</span>) <span class="co"># unitless</span></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>k_B <span class="op">=</span> const.Boltzmann <span class="co"># J/K Accepted value of Boltsmann constant from SciPy constants library.</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="co"># You do the rest</span></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>k_295 <span class="op">=</span> get_uslope(J_294_fit_params) <span class="op">/</span> (G<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> <span class="dv">4</span> <span class="op">*</span> T_295 <span class="op">*</span> <span class="dv">1000</span>)</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a><span class="co">## Calculate and print k_Boltzmann</span></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Use the following print line:</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Boltzmann constant from T = 295K data = {:.2uP} J/K'</span>.<span class="bu">format</span>(k_295))</span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Accepted value = </span><span class="sc">{:.4g}</span><span class="st"> J/K'</span>.<span class="bu">format</span>(k_B))</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="op">/</span> (<span class="dv">4</span> <span class="op">*</span> T_295 <span class="op">*</span> <span class="dv">1000</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Boltzmann constant from T = 295K data = (1.406±0.022)×10⁻²³ J/K
+Accepted value = 1.381e-23 J/K</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="243">
+<pre><code>8.474576271186441e-07+/-2.872737719046251e-09</code></pre>
+</div>
+</div>
+</section>
+<section id="k-data" class="level3">
+<h3 class="anchored" data-anchor-id="k-data">77 K data</h3>
+<p>Repeat the process for the 77K data set.</p>
+<div id="cell-37" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.954337804Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.928975217Z&quot;}}" data-execution_count="244">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Repeat for the 77K data</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>T_77 <span class="op">=</span> unc.ufloat(<span class="fl">77.0</span>,<span class="fl">1.0</span>)</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>k_ln2 <span class="op">=</span> get_uslope(J_ln2_fit_params) <span class="op">/</span> (G<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> <span class="dv">4</span> <span class="op">*</span> T_77 <span class="op">*</span> <span class="dv">1000</span>)</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Boltzmann constant from T = 77K data = {:.2uP} J/K'</span>.<span class="bu">format</span>(k_ln2))</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Accepted value = </span><span class="sc">{:.4g}</span><span class="st"> J/K'</span>.<span class="bu">format</span>(k_B))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Boltzmann constant from T = 77K data = (1.513±0.032)×10⁻²³ J/K
+Accepted value = 1.381e-23 J/K</code></pre>
+</div>
+</div>
+<p>And finally, the difference data</p>
+<div id="cell-39" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.979022348Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.956394732Z&quot;}}" data-execution_count="245">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Repeat for the "difference" data (295K-77K) subracted in quadrature</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>T_diff <span class="op">=</span> T_295 <span class="op">-</span> T_77</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>k_diff <span class="op">=</span> get_uslope(J_diff_fit_params) <span class="op">/</span> (G<span class="op">**</span><span class="dv">2</span> <span class="op">*</span> <span class="dv">4</span> <span class="op">*</span> T_diff <span class="op">*</span> <span class="dv">1000</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Boltzmann constant from T = 77K data = {:.2uP} J/K'</span>.<span class="bu">format</span>(k_diff))</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Accepted value = </span><span class="sc">{:.4g}</span><span class="st"> J/K'</span>.<span class="bu">format</span>(k_B))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Boltzmann constant from T = 77K data = (1.359±0.030)×10⁻²³ J/K
+Accepted value = 1.381e-23 J/K</code></pre>
+</div>
+</div>
+</section>
+<section id="plot-everything-on-one-graph" class="level3">
+<h3 class="anchored" data-anchor-id="plot-everything-on-one-graph">Plot everything on one graph</h3>
+<p>Make a single plot that shows all three sets of data (as points) and the three fit lines (as lines). Include a legend.</p>
+<p>The cell below shows how to create a fit line using an arbitrary set of x-values based on the range of x data. It uses the example data sets.</p>
+<section id="recall" class="level4">
+<h4 class="anchored" data-anchor-id="recall">Recall</h4>
+<p>Let’s start with the plot <code>ax_grid</code>, which, if we recall, is the graph with all the datapoints. we have 3 sets of line data that we will now fit into these graphs: * _295 300k * _ln2 77k * _diff difference in the data.</p>
+<p>Lets view our original graph first:</p>
+<div id="cell-42" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:34.988350116Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.981361596Z&quot;}}" data-execution_count="246">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Lets replot based on the Gain.</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="co"># fig_john, ax_john = plt.subplots()</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ax_john.grid()</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ax_john.set_title('Johnson Noise Data, in Quadrature')</span></span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a><span class="co"># ax_john.set_ylabel(r'$V^2_J$ (Vrms$^2$)')</span></span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ax_john.set_xlabel(r'Resistance $R$ ($\Omega$)')</span></span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ax_john.set_yli</span></span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a><span class="co"># ax_john.autoscale(enable=True, axis=ax_john.get_yaxis())</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a><span class="co"># #</span></span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co"># ax_john.errorbar(J_294['R (ohms)'],</span></span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="co">#                  unp.nominal_values(J_294['Vms (V)'] / G),</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a><span class="co">#                  unp.std_devs(J_294['Vms (V)']) * 10,</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a><span class="co">#                  label='T = 295K', fmt='o')</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a><span class="co"># ax_john.errorbar(J_ln2['R (ohms)'],</span></span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a><span class="co">#                  unp.nominal_values(J_ln2['Vms (V)']),</span></span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a><span class="co">#                  unp.std_devs(J_ln2['Vms (V)']) * 10,</span></span>
+<span id="cb31-20"><a href="#cb31-20" aria-hidden="true" tabindex="-1"></a><span class="co">#                  label='T = 77K', fmt='o')</span></span>
+<span id="cb31-21"><a href="#cb31-21" aria-hidden="true" tabindex="-1"></a><span class="co"># ax_john.errorbar(J_diff['R (ohms)'],</span></span>
+<span id="cb31-22"><a href="#cb31-22" aria-hidden="true" tabindex="-1"></a><span class="co">#                  unp.nominal_values(J_diff['Vms (V) diff']),</span></span>
+<span id="cb31-23"><a href="#cb31-23" aria-hidden="true" tabindex="-1"></a><span class="co">#                  unp.std_devs(J_diff['Vms (V) diff']) * 10,</span></span>
+<span id="cb31-24"><a href="#cb31-24" aria-hidden="true" tabindex="-1"></a><span class="co">#                  label='T = diff', fmt='o')</span></span>
+<span id="cb31-25"><a href="#cb31-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-26"><a href="#cb31-26" aria-hidden="true" tabindex="-1"></a>plt.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="adding-fit-lines" class="level4">
+<h4 class="anchored" data-anchor-id="adding-fit-lines">Adding Fit lines</h4>
+<div id="cell-44" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:35.020342238Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:34.990086363Z&quot;}}" data-execution_count="247">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="bu">type</span>(J_294[<span class="st">'R (ohms)'</span>].<span class="bu">min</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="247">
+<pre><code>numpy.float64</code></pre>
+</div>
+</div>
+<div id="cell-45" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:35.060983896Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:35.022457025Z&quot;}}" data-execution_count="248">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># start with _294</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>xvalues_294 <span class="op">=</span> np.linspace(J_294[<span class="st">'R (ohms)'</span>].<span class="bu">min</span>(), J_294[<span class="st">'R (ohms)'</span>].<span class="bu">max</span>(), <span class="dv">100</span>)</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>yvalues_294 <span class="op">=</span> line.<span class="bu">eval</span>(J_294_fit_params, x<span class="op">=</span>xvalues_294)</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>xvalues_ln2 <span class="op">=</span> np.linspace(J_ln2[<span class="st">'R (ohms)'</span>].<span class="bu">min</span>(), J_ln2[<span class="st">'R (ohms)'</span>].<span class="bu">max</span>(), <span class="dv">100</span>)</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>yvalues_ln2 <span class="op">=</span> line.<span class="bu">eval</span>(J_ln2_fit_params, x<span class="op">=</span>xvalues_ln2)</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>xvalues_diff <span class="op">=</span> np.linspace(J_diff[<span class="st">'R (ohms)'</span>].<span class="bu">min</span>(), J_diff[<span class="st">'R (ohms)'</span>].<span class="bu">max</span>(), <span class="dv">100</span>)</span>
+<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>yvalues_diff <span class="op">=</span> line.<span class="bu">eval</span>(J_diff_fit_params, x<span class="op">=</span>xvalues_diff)</span>
+<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>yvalues_294</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="248">
+<pre><code>array([3.91171144e-07, 1.07791840e-06, 1.76466565e-06, 2.45141290e-06,
+       3.13816015e-06, 3.82490740e-06, 4.51165466e-06, 5.19840191e-06,
+       5.88514916e-06, 6.57189641e-06, 7.25864366e-06, 7.94539091e-06,
+       8.63213817e-06, 9.31888542e-06, 1.00056327e-05, 1.06923799e-05,
+       1.13791272e-05, 1.20658744e-05, 1.27526217e-05, 1.34393689e-05,
+       1.41261162e-05, 1.48128634e-05, 1.54996107e-05, 1.61863579e-05,
+       1.68731052e-05, 1.75598524e-05, 1.82465997e-05, 1.89333469e-05,
+       1.96200942e-05, 2.03068414e-05, 2.09935887e-05, 2.16803360e-05,
+       2.23670832e-05, 2.30538305e-05, 2.37405777e-05, 2.44273250e-05,
+       2.51140722e-05, 2.58008195e-05, 2.64875667e-05, 2.71743140e-05,
+       2.78610612e-05, 2.85478085e-05, 2.92345557e-05, 2.99213030e-05,
+       3.06080502e-05, 3.12947975e-05, 3.19815447e-05, 3.26682920e-05,
+       3.33550392e-05, 3.40417865e-05, 3.47285337e-05, 3.54152810e-05,
+       3.61020282e-05, 3.67887755e-05, 3.74755227e-05, 3.81622700e-05,
+       3.88490173e-05, 3.95357645e-05, 4.02225118e-05, 4.09092590e-05,
+       4.15960063e-05, 4.22827535e-05, 4.29695008e-05, 4.36562480e-05,
+       4.43429953e-05, 4.50297425e-05, 4.57164898e-05, 4.64032370e-05,
+       4.70899843e-05, 4.77767315e-05, 4.84634788e-05, 4.91502260e-05,
+       4.98369733e-05, 5.05237205e-05, 5.12104678e-05, 5.18972150e-05,
+       5.25839623e-05, 5.32707095e-05, 5.39574568e-05, 5.46442040e-05,
+       5.53309513e-05, 5.60176985e-05, 5.67044458e-05, 5.73911931e-05,
+       5.80779403e-05, 5.87646876e-05, 5.94514348e-05, 6.01381821e-05,
+       6.08249293e-05, 6.15116766e-05, 6.21984238e-05, 6.28851711e-05,
+       6.35719183e-05, 6.42586656e-05, 6.49454128e-05, 6.56321601e-05,
+       6.63189073e-05, 6.70056546e-05, 6.76924018e-05, 6.83791491e-05])</code></pre>
+</div>
+</div>
+<div id="cell-46" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:35.197239722Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:35.061921545Z&quot;}}" data-execution_count="249">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Finally, we plot:</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>ax_quad.plot(xvalues_294, yvalues_294, color<span class="op">=</span><span class="st">'blue'</span>, label<span class="op">=</span><span class="st">'295K fit'</span>)</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>ax_quad.plot(xvalues_ln2, yvalues_ln2, color<span class="op">=</span><span class="st">'yellow'</span>, label<span class="op">=</span><span class="st">'77K fit'</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>ax_quad.plot(xvalues_diff, yvalues_diff, color<span class="op">=</span><span class="st">'purple'</span>, label<span class="op">=</span><span class="st">'diff fit'</span>)</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>ax_quad.legend()</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>ax_quad.grid(color<span class="op">=</span><span class="st">'#2A3459'</span>)</span>
+<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Let's also add the slope data:</span></span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>display(fig_quad)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-26-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="part-c." class="level3">
+<h3 class="anchored" data-anchor-id="part-c.">Part c.</h3>
+<p>Summary of results for Boltsmann constant:</p>
+<div id="cell-48" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:35.227652221Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:35.198431668Z&quot;}}" data-execution_count="250">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Summarize the results in one table</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="co">## Like so:</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'  T (K)  |  k_B (J/K)   '</span>)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'---------|--------------------'</span>)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'   295   | {:.1uP}'</span>.<span class="bu">format</span>(k_295))</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'    77   | {:.1uP}'</span>.<span class="bu">format</span>(k_ln2))</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">' 295-77  | {:.1uP}'</span>.<span class="bu">format</span>(k_diff))</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Accepted | </span><span class="sc">{:10.4g}</span><span class="st">'</span>.<span class="bu">format</span>(k_B))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  T (K)  |  k_B (J/K)   
+---------|--------------------
+   295   | (1.41±0.02)×10⁻²³
+    77   | (1.51±0.03)×10⁻²³
+ 295-77  | (1.36±0.03)×10⁻²³
+Accepted |  1.381e-23</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="exercise-3-noise-figure" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-3-noise-figure">Exercise 3: Noise Figure</h2>
+<p>Calculate the “noise figure” for the low-noise amp, as described in the instructions.</p>
+<p>The noise figure is defined:</p>
+<p><span class="math display">\[ NF = 20\log_{10}\frac{V_{rms}(R)}{G\times\sqrt{4k_BTRB}} \; \text{dB}\]</span></p>
+<p>Please limit the noise figure to 2 digits beyond the decimal point.</p>
+<p>Note: It clearly does not work for <span class="math inline">\(R=0\)</span>. You will need to leave this out of the calculations.</p>
+<div id="cell-50" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:35.237215310Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:35.229924153Z&quot;}}" data-execution_count="251">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> uncertainties <span class="im">import</span> umath</span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="co">## Calculate the Noise figure for the various values of R at</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a><span class="co">## room temperature and display it as a table or a plot</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a><span class="co">## Lets define a function to handle everything for us:</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="cell-51" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:35.255936248Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:35.237725016Z&quot;}}" data-execution_count="252">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> NF_calc(R, Vrms, T, gain <span class="op">=</span> G, k_boltz <span class="op">=</span> k_B):</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (R <span class="op">==</span> <span class="dv">0</span>):</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> np.nan<span class="co"># For the 0 Edge Case</span></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span>  Vrms <span class="op">/</span> (gain <span class="op">*</span> umath.sqrt(<span class="dv">4</span> <span class="op">*</span> k_boltz <span class="op">*</span> T <span class="op">*</span> R <span class="op">*</span> <span class="dv">1000</span> ))</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> nf_izer(target0, target1, temp):</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> <span class="bu">list</span>()</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(target0) <span class="op">!=</span> <span class="bu">len</span>(target1):</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"Not the right length"</span>)</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(target0)):</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>        result.append(NF_calc(target0.iloc[i], target1.iloc[i], temp))</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>NF_294 <span class="op">=</span> nf_izer(J_294[<span class="st">'R (ohms)'</span>], J_294[<span class="st">'Vrms (V)'</span>], T_295)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>NF_ln2 <span class="op">=</span> nf_izer(J_ln2[<span class="st">'R (ohms)'</span>], J_ln2[<span class="st">'Vrms (V)'</span>], T_77)</span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>NF_diff <span class="op">=</span> nf_izer(J_diff[<span class="st">'R (ohms)'</span>], J_diff[<span class="st">'Vms (V) diff'</span>].<span class="bu">apply</span>(np.<span class="bu">abs</span>).<span class="bu">apply</span>(umath.sqrt), T_diff)</span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a>summary <span class="op">=</span> pd.DataFrame({<span class="st">'R (ohms)'</span>: J_294[<span class="st">'R (ohms)'</span>], <span class="st">'nf_294'</span> : NF_294, <span class="st">'nf_ln2'</span> : NF_ln2, <span class="st">'nf_diff'</span> : NF_diff})</span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>summary</span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a><span class="co"># first, lets create staging arrays</span></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a><span class="co"># NF_294 = np.zeros_like(J_294['R (ohms)'])</span></span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a><span class="co"># NF_ln2 = np.zeros_like(J_ln2['R (ohms)'])</span></span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a><span class="co"># NF_diff = np.zeros_like(J_diff['R (ohms)'])</span></span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a><span class="co"># now,</span></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Next we'll create a smplified dataframe</span></span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a><span class="co"># big = pd.DataFrame({'R (ohms)': J_294['R (ohms)'],</span></span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a><span class="co">#                         'Vrms (V)_294': J_294['Vrms (V)'],</span></span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a><span class="co">#                         'Vrms (V)_ln2': J_ln2['Vrms (V)'],</span></span>
+<span id="cb40-34"><a href="#cb40-34" aria-hidden="true" tabindex="-1"></a><span class="co">#                         'Vrms (V)_diff': J_diff['Vms (V) diff'].apply(np.abs).apply(unp.sqrt),</span></span>
+<span id="cb40-35"><a href="#cb40-35" aria-hidden="true" tabindex="-1"></a><span class="co">#                     })</span></span>
+<span id="cb40-36"><a href="#cb40-36" aria-hidden="true" tabindex="-1"></a><span class="co"># big</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/home/coyotedark/Documents/uw/phys/431/johnson-and-shot-noise-main/.venv/lib/python3.14/site-packages/pandas/core/internals/blocks.py:347: FutureWarning: AffineScalarFunc.__abs__() is deprecated. It will be removed in a future release.
+  result = func(self.values, **kwargs)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="252">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">R (ohms)</th>
+<th data-quarto-table-cell-role="th">nf_294</th>
+<th data-quarto-table-cell-role="th">nf_ln2</th>
+<th data-quarto-table-cell-role="th">nf_diff</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>40000.0</td>
+<td>0.962+/-0.004</td>
+<td>1.035+/-0.008</td>
+<td>0.934+/-0.014</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>20000.0</td>
+<td>1.009+/-0.004</td>
+<td>1.072+/-0.008</td>
+<td>0.986+/-0.014</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>15000.0</td>
+<td>1.015+/-0.004</td>
+<td>1.069+/-0.008</td>
+<td>0.995+/-0.016</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>9990.0</td>
+<td>1.025+/-0.004</td>
+<td>1.083+/-0.008</td>
+<td>1.004+/-0.009</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>7500.0</td>
+<td>1.037+/-0.004</td>
+<td>1.106+/-0.008</td>
+<td>1.011+/-0.023</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>4990.0</td>
+<td>1.039+/-0.004</td>
+<td>1.190+/-0.009</td>
+<td>0.980+/-0.015</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>2500.0</td>
+<td>1.071+/-0.004</td>
+<td>1.207+/-0.009</td>
+<td>1.018+/-0.019</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>1000.0</td>
+<td>1.144+/-0.004</td>
+<td>1.419+/-0.010</td>
+<td>1.030+/-0.019</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>0.0</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="shot-noise-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="shot-noise-analysis">Shot Noise Analysis</h2>
+<blockquote class="blockquote">
+<p>This is very similar to the Johnson noise analysis.</p>
+</blockquote>
+<section id="read-in-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="read-in-the-data">Read in the data</h3>
+<blockquote class="blockquote">
+<p>For data structure type “1”, column names like “0.1202mA” need to split at <code>m</code> to convert the current labels into currents.</p>
+</blockquote>
+<p>For the Shot Noise data, due to the battery constraints, we opted for the automated collection of averages. This, however, means we do not have the standard deviation. This means uncertainties will not be reported.</p>
+<div id="cell-53" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T02:01:39.541949509Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T02:01:39.513618794Z&quot;}}" data-scrolled="true" data-execution_count="273">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>shot <span class="op">=</span> pd.read_csv(<span class="st">'./rawData/Johnson data - shot.csv'</span>)</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>shot <span class="op">=</span> shot.rename(columns<span class="op">=</span>{<span class="st">'Emission Current'</span> : <span class="st">'Emission Current (A)'</span>, <span class="st">'Avr'</span> : <span class="st">'Average (Vrms)'</span>}, errors<span class="op">=</span><span class="st">'raise'</span>)</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>shot[<span class="st">'Emission Current (A)'</span>] <span class="op">=</span> shot[<span class="st">"Emission Current (A)"</span>] <span class="op">/</span> <span class="dv">1000</span></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>shot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="273">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Emission Current (A)</th>
+<th data-quarto-table-cell-role="th">Average (Vrms)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.000000</td>
+<td>0.004807</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0.000010</td>
+<td>0.007450</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.000011</td>
+<td>0.007873</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>0.000012</td>
+<td>0.008101</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0.000013</td>
+<td>0.008657</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>0.000014</td>
+<td>0.008493</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>0.000015</td>
+<td>0.008643</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>0.000020</td>
+<td>0.009940</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>0.000030</td>
+<td>0.011280</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>0.000040</td>
+<td>0.012660</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>0.000050</td>
+<td>0.013750</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>0.000060</td>
+<td>0.014880</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>0.000070</td>
+<td>0.015910</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>0.000080</td>
+<td>0.017140</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>0.000090</td>
+<td>0.017990</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>0.000100</td>
+<td>0.018810</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>0.000110</td>
+<td>0.019710</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>0.000120</td>
+<td>0.020540</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>0.000130</td>
+<td>0.021360</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>0.000140</td>
+<td>0.022140</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>0.000150</td>
+<td>0.022680</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="plot-the-raw-data" class="level3">
+<h3 class="anchored" data-anchor-id="plot-the-raw-data">Plot the raw data</h3>
+<div id="cell-55" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T02:01:44.454152523Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T02:01:44.349904805Z&quot;}}" data-execution_count="274">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Plot it</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> shot.plot.scatter(<span class="st">'Emission Current (A)'</span>, <span class="st">'Average (Vrms)'</span>, marker<span class="op">=</span><span class="st">'d'</span>)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> fig.axes</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-31-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="calculate-v2_rms" class="level3">
+<h3 class="anchored" data-anchor-id="calculate-v2_rms">Calculate <span class="math inline">\(V^2_{rms}\)</span></h3>
+<div id="cell-57" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T02:01:46.435395541Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T02:01:46.381518775Z&quot;}}" data-scrolled="true" data-execution_count="275">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="co">## transform the data, like you did with Johnson noise</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>shot[<span class="st">'Vms'</span>] <span class="op">=</span> shot[<span class="st">"Average (Vrms)"</span>]<span class="op">**</span><span class="dv">2</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>shot</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="275">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Emission Current (A)</th>
+<th data-quarto-table-cell-role="th">Average (Vrms)</th>
+<th data-quarto-table-cell-role="th">Vms</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>0.000000</td>
+<td>0.004807</td>
+<td>0.000023</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>0.000010</td>
+<td>0.007450</td>
+<td>0.000056</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>0.000011</td>
+<td>0.007873</td>
+<td>0.000062</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>0.000012</td>
+<td>0.008101</td>
+<td>0.000066</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>0.000013</td>
+<td>0.008657</td>
+<td>0.000075</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>0.000014</td>
+<td>0.008493</td>
+<td>0.000072</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>0.000015</td>
+<td>0.008643</td>
+<td>0.000075</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>0.000020</td>
+<td>0.009940</td>
+<td>0.000099</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>0.000030</td>
+<td>0.011280</td>
+<td>0.000127</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>0.000040</td>
+<td>0.012660</td>
+<td>0.000160</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>0.000050</td>
+<td>0.013750</td>
+<td>0.000189</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>0.000060</td>
+<td>0.014880</td>
+<td>0.000221</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>0.000070</td>
+<td>0.015910</td>
+<td>0.000253</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>0.000080</td>
+<td>0.017140</td>
+<td>0.000294</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>0.000090</td>
+<td>0.017990</td>
+<td>0.000324</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>0.000100</td>
+<td>0.018810</td>
+<td>0.000354</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>0.000110</td>
+<td>0.019710</td>
+<td>0.000388</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>0.000120</td>
+<td>0.020540</td>
+<td>0.000422</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>0.000130</td>
+<td>0.021360</td>
+<td>0.000456</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>0.000140</td>
+<td>0.022140</td>
+<td>0.000490</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>0.000150</td>
+<td>0.022680</td>
+<td>0.000514</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="cell-58" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T00:49:36.236314443Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T00:49:36.129491278Z&quot;}}" data-execution_count="256">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>shot.plot.scatter(<span class="st">'Emission Current (A)'</span>, <span class="st">'Vms'</span>, marker<span class="op">=</span><span class="st">'d'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-33-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="then-fit-it-and-plot-it" class="level3">
+<h3 class="anchored" data-anchor-id="then-fit-it-and-plot-it">Then fit it and plot it</h3>
+<p><strong>Note:</strong> Shot nose data may not be “pure” in that you will see a notable deviation from the expected behavior. The data may be affected by <span class="math inline">\(1/f\)</span> noise in the vacuum diode that gets worse with higher emission current. This effect is reduced in the newer shot noise apparatus that uses a different vacuum diode. If you see a notable curve in your measured voltage, you may try a couple of work-arounds to obtain the linear part of the noise-squared vs emission current:</p>
+<ol type="1">
+<li>Select a portion of the data to fit, where the <span class="math inline">\(1/f\)</span> problem is less, near the low-emission current end of the data set.</li>
+<li>Make a ploynomial fit and look at the linear term.</li>
+</ol>
+<p>You should try a couple of options and compare your results with your partners. You only need to do this if you see the <span class="math inline">\(1/f\)</span> effect.</p>
+<div id="cell-60" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T02:01:49.474268664Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T02:01:49.330558056Z&quot;}}" data-execution_count="276">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co">## First the fit. Try the whole data set first.</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The data seems fairly linear, lets try fitting first.</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>shotparams <span class="op">=</span> line_fit_and_plot(shot[<span class="st">'Emission Current (A)'</span>], shot[<span class="st">'Vms'</span>])</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 4
+    # data points      = 21
+    # variables        = 2
+    chi-square         = 2.0107e-10
+    reduced chi-square = 1.0583e-11
+    Akaike info crit   = -528.809393
+    Bayesian info crit = -526.720348
+    R-squared          = 0.99961758
+[[Variables]]
+    slope:      3.28674301 +/- 0.01474829 (0.45%) (init = 3.286743)
+    intercept:  2.6791e-05 +/- 1.1372e-06 (4.24%) (init = 2.679105e-05)</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-34-output-2.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div id="cell-61" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T02:01:51.903290968Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T02:01:51.856226105Z&quot;}}" data-execution_count="277">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="co">## and the slope of the data is:</span></span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>shot_slope_inclusive <span class="op">=</span> get_uslope(shotparams)</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>shot_slope_inclusive</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display" data-execution_count="277">
+<pre><code>3.28674300654674+/-0.014748286981550951</code></pre>
+</div>
+</div>
+<div id="cell-62" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T02:01:53.336764169Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T02:01:53.165073023Z&quot;}}" data-execution_count="278">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Next, lets only get the data we collected more of.</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We collected extra data from .01 - .015, so lets first split the data</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>shot_small <span class="op">=</span> shot.iloc[<span class="dv">0</span>:<span class="dv">7</span>]</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>shot_small_params <span class="op">=</span> line_fit_and_plot(shot_small[<span class="st">'Emission Current (A)'</span>], shot_small[<span class="st">'Vms'</span>])</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>shot_small_slope <span class="op">=</span> get_uslope(shot_small_params)</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>shot_small_slope</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 4
+    # data points      = 7
+    # variables        = 2
+    chi-square         = 4.4992e-11
+    reduced chi-square = 8.9984e-12
+    Akaike info crit   = -176.393090
+    Bayesian info crit = -176.501270
+    R-squared          = 0.97744034
+[[Variables]]
+    slope:      3.58792818 +/- 0.24376977 (6.79%) (init = 3.587928)
+    intercept:  2.2700e-05 +/- 2.8473e-06 (12.54%) (init = 2.270023e-05)</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="278">
+<pre><code>3.5879281820754727+/-0.2437697702576206</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Noise%20Analysis%20(template,%202024)_files/figure-html/cell-36-output-3.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="calculate-electron-charge" class="level3">
+<h3 class="anchored" data-anchor-id="calculate-electron-charge">Calculate Electron Charge</h3>
+<blockquote class="blockquote">
+<p>Use the fit results, propagate the uncertainty, and find a value for <span class="math inline">\(e\)</span>.</p>
+</blockquote>
+<p>The equation given is: <span class="math display">\[I_{shot} = \sqrt{2eI_{emi}B}\]</span></p>
+<p>The slope we found is <span class="math inline">\(V^2/I\)</span>, so lets use that to find e.</p>
+<div id="cell-64" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;ExecuteTime&quot;,&quot;value&quot;:{&quot;end_time&quot;:&quot;2026-02-01T02:03:03.708825823Z&quot;,&quot;start_time&quot;:&quot;2026-02-01T02:03:03.664672171Z&quot;}}" data-execution_count="283">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co">## Calculate e with uncertainty and print it (with units) </span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="co">## Compare with the accepted value</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="co"># You will need the correct sensing resistance in the shot noise box:</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Older box:</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a><span class="co"># R_load = unc.ufloat(4976,1) # Load resistance of shot noise box in ohms </span></span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Newer box:</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>R_load <span class="op">=</span> unc.ufloat(<span class="fl">10000.0</span>,<span class="dv">10</span>)</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a><span class="co"># e_1 = .5 * (1000 * R_load ** 2) ** -1 * shot_slope_inclusive # This is mA</span></span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>e_1 <span class="op">=</span> (<span class="dv">1</span> <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> (G <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="dv">1000</span> <span class="op">*</span> (R_load <span class="op">**</span> <span class="dv">2</span>))) <span class="op">*</span> shot_slope_inclusive</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>e_2 <span class="op">=</span> (<span class="dv">1</span> <span class="op">/</span> (<span class="dv">2</span> <span class="op">*</span> (G <span class="op">**</span> <span class="dv">2</span>) <span class="op">*</span> <span class="dv">1000</span> <span class="op">*</span> (R_load <span class="op">**</span> <span class="dv">2</span>))) <span class="op">*</span> shot_small_slope</span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-15"><a href="#cb53-15" aria-hidden="true" tabindex="-1"></a><span class="co"># We have th</span></span>
+<span id="cb53-16"><a href="#cb53-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-17"><a href="#cb53-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-18"><a href="#cb53-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-19"><a href="#cb53-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the result, and propagate the uncertainty.</span></span>
+<span id="cb53-20"><a href="#cb53-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-21"><a href="#cb53-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Use whatever you need below</span></span>
+<span id="cb53-22"><a href="#cb53-22" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Electron charge from whole data set = {:.2uP} C'</span>.<span class="bu">format</span>(e_1))</span>
+<span id="cb53-23"><a href="#cb53-23" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'Electron charge from partial data set = {:.2uP} C'</span>.<span class="bu">format</span>(e_2))</span>
+<span id="cb53-24"><a href="#cb53-24" aria-hidden="true" tabindex="-1"></a><span class="co"># print('Electron charge from quadratic fit = {:.2uP} C'.format(e_3))</span></span>
+<span id="cb53-25"><a href="#cb53-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">'</span><span class="ch">\n</span><span class="st">Accepted value = </span><span class="sc">{:.4g}</span><span class="st"> C'</span>.<span class="bu">format</span>(const.e))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Electron charge from whole data set = (1.604±0.014)×10⁻¹⁹ C
+Electron charge from partial data set = (1.75±0.12)×10⁻¹⁹ C
+
+Accepted value = 1.602e-19 C</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

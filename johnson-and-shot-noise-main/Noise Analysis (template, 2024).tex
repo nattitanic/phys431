@@ -1,0 +1,1653 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{241,243,245}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Johnson and Shot Noise Analysis},
+  pdfauthor={Nathan Chien},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Johnson and Shot Noise Analysis}
+\author{Nathan Chien}
+\date{}
+\begin{document}
+\maketitle
+
+\renewcommand*\contentsname{Table of contents}
+{
+\hypersetup{linkcolor=}
+\setcounter{tocdepth}{3}
+\tableofcontents
+}
+
+\section{Johnson and Shot Noise Analysis
+(2024)}\label{johnson-and-shot-noise-analysis-2024}
+
+\paragraph{This template assumes use of the new shot noise
+source}\label{this-template-assumes-use-of-the-new-shot-noise-source}
+
+Use this template to carry out the analysis tasks for the Noise
+experiment. For reference, here are links to recommended Python
+resources: the
+\href{https://jakevdp.github.io/WhirlwindTourOfPython/}{Whirlwind Tour
+of Python} and the
+\href{https://jakevdp.github.io/PythonDataScienceHandbook/}{Python Data
+Science Handbook} both by Jake VanderPlas. \#\# First, import some
+packages
+
+This is a good idea at the beginning of your notebook to include the
+packages that you will need. We will use those shown below here. A brief
+description: * \texttt{numpy} is the foundational package for Python
+numerical work. It extends and speeds up array operations beyond
+standard Python, and it includes almost all math functions that you
+would need for example \texttt{sqrt()} (square root) or \texttt{cos()}
+(cosine). These would be written in code as \texttt{np.sqrt()} or
+\texttt{np.cos()}. * \texttt{scipy} is a huge collection of scientific
+data analysis functions, routines, physicical constants, etc. This is
+the second most used package for scientific work. Here we will use the
+physical constants library, \texttt{scipy.constants}. Documentation is
+at \href{https://docs.scipy.org/doc/scipy/reference/}{SciPy.org} with
+the constants subpackage at
+https://docs.scipy.org/doc/scipy/reference/constants.html. *
+\texttt{uncertainties} is a very useful small package that simplifies
+uncertainty propagation and printing out of quantities with uncertainty.
+Documentation is at https://pythonhosted.org/uncertainties/ *
+\texttt{matplotlib} is \emph{the} standard plotting package for
+scientific Python. We will use a subset called \texttt{pyplot} which is
+modeled after the plotting functions used in MATLAB. The last line
+below, \texttt{\%matplotlib\ inline}, simply forces the plots to appear
+within the notebook. * \texttt{pandas} is a large data science package.
+It's main feature is a set of methods to create and manipulate a
+``DataFrame,'' which is an enlargement of the idea of an array. I plays
+well with NumPy and other packages. We will use it mainly as a way to
+read files into data sets in an easy way.
+
+We will also use the \href{https://lmfit.github.io/lmfit-py/}{LMFit}
+package to make line fits. This will be explained later in the notebook.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{from}\NormalTok{ json.decoder }\ImportTok{import}\NormalTok{ NaN}
+
+\CommentTok{\# Run this cell with Shift{-}Enter, and wait until the}
+\CommentTok{\# asterisk changes to a number, i.e., [*] becomes [1]}
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{import}\NormalTok{ pandas}
+\ImportTok{import}\NormalTok{ scipy.constants }\ImportTok{as}\NormalTok{ const}
+\ImportTok{import}\NormalTok{ uncertainties }\ImportTok{as}\NormalTok{ unc}
+\ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ re }\ImportTok{as}\NormalTok{ re}
+\ImportTok{import}\NormalTok{ mplcyberpunk}
+\ImportTok{from}\NormalTok{ numpy.f2py.auxfuncs }\ImportTok{import}\NormalTok{ throw\_error}
+\ImportTok{from}\NormalTok{ numpy.ma.core }\ImportTok{import}\NormalTok{ size}
+\ImportTok{from}\NormalTok{ uncertainties }\ImportTok{import}\NormalTok{ ufloat}
+\ImportTok{from}\NormalTok{ uncertainties.unumpy }\ImportTok{import}\NormalTok{ uarray}
+\OperatorTok{\%}\NormalTok{matplotlib inline}
+
+\NormalTok{plt.style.use(}\StringTok{\textquotesingle{}cyberpunk\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Johnson Noise Analysis}\label{johnson-noise-analysis}
+
+\subsection{Exercise 1 - Data
+reduction}\label{exercise-1---data-reduction}
+
+\begin{quote}
+\subsubsection{Read in the raw data}\label{read-in-the-raw-data}
+
+\textbf{About Data Files:} This template assumes that the data files
+will have one of two types of structure: 1. If you took 5 readings (or
+so) for each measurement and plan to average them here, the assumed
+structure is one where each spreadsheet column is named with the
+resistance (for \textgreater{} Johnson Noise), e.g., ``9.99k'', or the
+emission current (for shot noise), e.g., ``0.1047mA'' and each row of
+the data is one trial with each cell containing the measured RMS voltage
+\textgreater{} in the frequency band; 2. If you opted instead to simply
+take one longer-average time measurement for each resistance (or
+emission current), then the assumed structure would be two columns, the
+first \textgreater{} column headed with resistance (or emission current)
+and the second column headed with the measured RMS voltage in the
+frequency band.
+
+Below, these structures are treated by the designation ``1'' or ``2''.
+Stucture type ``1'' requires a little more effort to reduce, but offers
+the option of calculating data point \textgreater{} uncertainties.
+
+\textbf{Advice:} Use the \textbf{Pandas} function \texttt{read\_csv()}
+to pull the file into a Pandas Dataframe, like this:
+
+\begin{verbatim}
+johnson_294 = pd.read_csv('Johnson_294K.csv')
+\end{verbatim}
+\end{quote}
+
+\begin{quote}
+If the last line in the code cell is the name of the DataFrame
+(\texttt{johnson\_294}), the notebook cell will print a nice table.
+\end{quote}
+
+\begin{quote}
+You may obtain the arrays for each column by using the column label,
+e.g.,
+\texttt{johnson\_294{[}\textquotesingle{}40.0k\textquotesingle{}{]}} is
+the array of the first column.
+\end{quote}
+
+For Johnson shot noise, we went about taking data manually and averaging
+it.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# This is to import the data as a raw pd dataframe.}
+
+\NormalTok{johnson\_294 }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}rawData/Johnson data {-} Johnson\_Room\_jupyter.csv\textquotesingle{}}\NormalTok{)}
+\NormalTok{johnson\_294  }\CommentTok{\# DataFrame name on the last line spits out a table}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& 40k & 20k & 15k & 9.99k & 7.5k & 4.99k & 2.5k & 1.0k & 0.0K \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.007909 & 0.005793 & 0.005050 & 0.004211 & 0.003701 & 0.002997 &
+0.002196 & 0.001457 & 0.000620 \\
+1 & 0.007962 & 0.005885 & 0.005047 & 0.004180 & 0.003633 & 0.003006 &
+0.002207 & 0.001484 & 0.000624 \\
+2 & 0.007796 & 0.005765 & 0.005031 & 0.004170 & 0.003611 & 0.002980 &
+0.002148 & 0.001482 & 0.000615 \\
+3 & 0.007801 & 0.005848 & 0.005163 & 0.004190 & 0.003652 & 0.003037 &
+0.002192 & 0.001496 & 0.000629 \\
+4 & 0.007821 & 0.005864 & 0.005107 & 0.004182 & 0.003747 & 0.002973 &
+0.002194 & 0.001473 & 0.000625 \\
+\end{longtable}
+
+\subsubsection{Massage the raw data}\label{massage-the-raw-data}
+
+\begin{quote}
+\mbox{}%
+\paragraph{For data structure type ``1.'' If you have a type ``2'' data
+structure, skip to ``Plot the Reduced Data''
+below.}\label{for-data-structure-type-1.-if-you-have-a-type-2-data-structure-skip-to-plot-the-reduced-data-below.}
+
+Create new arrays that have averages of the 5 readings at each value of
+the resistance and their standard deviation. Then extract the resistance
+from the column label and make \textgreater{} into a number. Finally,
+build a new DataFrame that has these arrays. Below is an example. The
+example shows a number of useful operations. Study it carefully.
+
+We will use a loop to build the new arrays first, and then combine them
+into a DataFrame.
+
+You can extract the resistance from the column heading. Here is one way
+to do it, assuming \texttt{col\_label} is the column label:
+
+\begin{verbatim}
+resistance = float(col_label.split('k')[0])
+\end{verbatim}
+
+This splits the label at \texttt{k} and puts the number into the first
+(0) position as a string. \texttt{float()} converts the number string to
+a flaoting point number.
+
+Then calculate the mean and standard deviation using the built-in
+methods for the arrays.
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Study this example.}
+
+\CommentTok{\# These lines create empty arrays that will be filled.}
+\NormalTok{Rs }\OperatorTok{=}\NormalTok{ np.zeros(}\DecValTok{0}\NormalTok{)}
+\NormalTok{Vs }\OperatorTok{=}\NormalTok{ np.zeros(}\DecValTok{0}\NormalTok{)}
+\NormalTok{Stds }\OperatorTok{=}\NormalTok{ np.zeros(}\DecValTok{0}\NormalTok{)}
+
+\CommentTok{\# This is a standard Python loop.  Note the \textquotesingle{}for \textless{}item\textgreater{} in \textless{}list\textgreater{}:\textquotesingle{} construction}
+\CommentTok{\# The \textquotesingle{}.columns\textquotesingle{} is an array of column labels in the DataFrame}
+\ControlFlowTok{for}\NormalTok{ label }\KeywordTok{in}\NormalTok{ johnson\_294.columns:}
+    \CommentTok{\# obtain the numerical part of the column label}
+    \CommentTok{\# R = float(label.split(\textquotesingle{}k\textquotesingle{})[0])}
+\NormalTok{    R }\OperatorTok{=} \BuiltInTok{float}\NormalTok{(re.split(}\VerbatimStringTok{r"}\FunctionTok{(?i)}\VerbatimStringTok{k"}\NormalTok{, label)[}\DecValTok{0}\NormalTok{])}
+    \CommentTok{\# calculate the mean (average) of the numbers in the column}
+\NormalTok{    mean }\OperatorTok{=}\NormalTok{ johnson\_294[label].mean()}
+    \CommentTok{\# calculate the standard deviation of the same numbers}
+\NormalTok{    std }\OperatorTok{=}\NormalTok{ johnson\_294[label].std()}
+
+    \CommentTok{\# These lines add each calculated result to the associated array}
+\NormalTok{    Rs }\OperatorTok{=}\NormalTok{ np.append(Rs,R)}
+\NormalTok{    Vs }\OperatorTok{=}\NormalTok{ np.append(Vs,mean)}
+\NormalTok{    Stds }\OperatorTok{=}\NormalTok{ np.append(Stds,std)}
+
+\NormalTok{Rs}
+
+\CommentTok{\# Initialize an empty DataFrame}
+\NormalTok{J\_294 }\OperatorTok{=}\NormalTok{ pd.DataFrame()}
+
+\CommentTok{\# These lines add columns to the DataFrame}
+\NormalTok{J\_294[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ Rs}\OperatorTok{*}\FloatTok{1000.0} \CommentTok{\# Convert resistance from kohms to ohms}
+\NormalTok{J\_294[}\StringTok{\textquotesingle{}Vrms (V)\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ Vs}
+\NormalTok{J\_294[}\StringTok{\textquotesingle{}DV (V)\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ Stds}
+
+\CommentTok{\# Here is another way to do the same thing}
+
+\NormalTok{J\_294\_ver2 }\OperatorTok{=}\NormalTok{ pd.DataFrame(\{}
+    \StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{: Rs}\OperatorTok{*}\FloatTok{1e3}\NormalTok{,}
+    \StringTok{\textquotesingle{}Vrms (V)\textquotesingle{}}\NormalTok{: Vs,}
+    \StringTok{\textquotesingle{}DV (V)\textquotesingle{}}\NormalTok{: Stds}
+\NormalTok{\})}
+
+\CommentTok{\# Finally display the results.  Name of DataFrame on last line spits a table}
+\CommentTok{\# J\_294}
+\NormalTok{J\_294\_ver2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& R (ohms) & Vrms (V) & DV (V) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 40000.0 & 0.007858 & 0.000074 \\
+1 & 20000.0 & 0.005831 & 0.000050 \\
+2 & 15000.0 & 0.005080 & 0.000055 \\
+3 & 9990.0 & 0.004187 & 0.000015 \\
+4 & 7500.0 & 0.003669 & 0.000055 \\
+5 & 4990.0 & 0.002999 & 0.000025 \\
+6 & 2500.0 & 0.002187 & 0.000023 \\
+7 & 1000.0 & 0.001478 & 0.000015 \\
+8 & 0.0 & 0.000623 & 0.000005 \\
+\end{longtable}
+
+\paragraph{Repeat for the other
+temperature}\label{repeat-for-the-other-temperature}
+
+\begin{quote}
+Now you try it for the other temperature data set.
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Read in the data set and display it}
+\NormalTok{johnson\_ln2 }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{"rawData/Johnson data {-} Johnson\_ln2\_jupyter.csv"}\NormalTok{)}
+\NormalTok{johnson\_ln2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& 40k & 20k & 15k & 9.99k & 7.5k & 4.99k & 2.5k & 1.0k & 0.0k \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.004315 & 0.003218 & 0.002730 & 0.002270 & 0.002021 & 0.001781 &
+0.001299 & 0.000932 & 0.000627 \\
+1 & 0.004319 & 0.003168 & 0.002759 & 0.002272 & 0.001994 & 0.001776 &
+0.001246 & 0.000927 & 0.000627 \\
+2 & 0.004299 & 0.003138 & 0.002712 & 0.002264 & 0.001972 & 0.001746 &
+0.001243 & 0.000947 & 0.000617 \\
+3 & 0.004424 & 0.003201 & 0.002749 & 0.002202 & 0.002000 & 0.001729 &
+0.001265 & 0.000941 & 0.000623 \\
+4 & 0.004292 & 0.003161 & 0.002731 & 0.002289 & 0.002032 & 0.001765 &
+0.001260 & 0.000944 & 0.000628 \\
+5 & 0.004286 & 0.003098 & 0.002715 & 0.002254 & 0.001981 & 0.001732 &
+0.001245 & 0.000929 & 0.000622 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Calculate the averages of each column.}
+\CommentTok{\#\# extract the values of the resistance.  }
+\CommentTok{\#\# Build a (new) dataframe and display it to see if it looks right.}
+\CommentTok{\# These lines create empty arrays that will be filled.}
+\NormalTok{Rs }\OperatorTok{=}\NormalTok{ np.zeros(}\DecValTok{0}\NormalTok{)}
+\NormalTok{Vs }\OperatorTok{=}\NormalTok{ np.zeros(}\DecValTok{0}\NormalTok{)}
+\NormalTok{Stds }\OperatorTok{=}\NormalTok{ np.zeros(}\DecValTok{0}\NormalTok{)}
+
+\CommentTok{\# This is a standard Python loop.  Note the \textquotesingle{}for \textless{}item\textgreater{} in \textless{}list\textgreater{}:\textquotesingle{} construction}
+\CommentTok{\# The \textquotesingle{}.columns\textquotesingle{} is an array of column labels in the DataFrame}
+\ControlFlowTok{for}\NormalTok{ label }\KeywordTok{in}\NormalTok{ johnson\_ln2.columns:}
+    \CommentTok{\# obtain the numerical part of the column label}
+    \CommentTok{\# R = float(label.split(\textquotesingle{}k\textquotesingle{})[0])}
+\NormalTok{    R }\OperatorTok{=} \BuiltInTok{float}\NormalTok{(re.split(}\VerbatimStringTok{r"}\FunctionTok{(?i)}\VerbatimStringTok{k"}\NormalTok{, label)[}\DecValTok{0}\NormalTok{])}
+    \CommentTok{\# calculate the mean (average) of the numbers in the column}
+\NormalTok{    mean }\OperatorTok{=}\NormalTok{ johnson\_ln2[label].mean()}
+    \CommentTok{\# calculate the standard deviation of the same numbers}
+\NormalTok{    std }\OperatorTok{=}\NormalTok{ johnson\_ln2[label].std()}
+
+    \CommentTok{\# These lines add each calculated result to the associated array}
+\NormalTok{    Rs }\OperatorTok{=}\NormalTok{ np.append(Rs,R)}
+\NormalTok{    Vs }\OperatorTok{=}\NormalTok{ np.append(Vs,mean)}
+\NormalTok{    Stds }\OperatorTok{=}\NormalTok{ np.append(Stds,std)}
+
+
+\NormalTok{J\_ln2 }\OperatorTok{=}\NormalTok{ pd.DataFrame(\{}
+    \StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{: Rs}\OperatorTok{*}\FloatTok{1e3}\NormalTok{,}
+    \StringTok{\textquotesingle{}Vrms (V)\textquotesingle{}}\NormalTok{: Vs,}
+    \StringTok{\textquotesingle{}DV (V)\textquotesingle{}}\NormalTok{: Stds}
+\NormalTok{\})}
+
+\NormalTok{J\_ln2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& R (ohms) & Vrms (V) & DV (V) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 40000.0 & 0.004322 & 0.000051 \\
+1 & 20000.0 & 0.003164 & 0.000043 \\
+2 & 15000.0 & 0.002733 & 0.000018 \\
+3 & 9990.0 & 0.002258 & 0.000030 \\
+4 & 7500.0 & 0.002000 & 0.000023 \\
+5 & 4990.0 & 0.001755 & 0.000022 \\
+6 & 2500.0 & 0.001260 & 0.000021 \\
+7 & 1000.0 & 0.000937 & 0.000008 \\
+8 & 0.0 & 0.000624 & 0.000004 \\
+\end{longtable}
+
+\subsubsection{Plot the reduced data}\label{plot-the-reduced-data}
+
+\begin{quote}
+Plot the data set of \(V_{rms}\) vs \(R\) to see what it looks like.
+
+Below, I'll show how. Study the commands, change them, and see what
+happens. Hint: study the sections in the
+\href{https://jakevdp.github\%3E\%20.io/PythonDataScienceHandbook/}{Python
+Data Science Handbook} on Matplotlib.
+
+After you make the plot, always look to make sure your data set does not
+have any weird points. This is a good way to catch bad data and/or
+mistakes.
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Set up plot defaults  This cell only needs to be executed once.}
+\ImportTok{import}\NormalTok{ matplotlib }\ImportTok{as}\NormalTok{ mpl}
+\NormalTok{mpl.rcParams[}\StringTok{\textquotesingle{}figure.figsize\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \FloatTok{10.0}\NormalTok{,}\FloatTok{8.0}  \CommentTok{\# Roughly 11 cm wde by 8 cm high}
+\NormalTok{mpl.rcParams[}\StringTok{\textquotesingle{}font.size\textquotesingle{}}\NormalTok{] }\OperatorTok{=} \FloatTok{12.0} \CommentTok{\# Use 12 point font}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Plot the data sets on one graph}
+\CommentTok{\#\# Header commands provided}
+
+
+\NormalTok{fig, ax }\OperatorTok{=}\NormalTok{ plt.subplots()}
+
+\NormalTok{ax.set\_title(}\StringTok{\textquotesingle{}Johnson Noise Data\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax.set\_xlabel(}\VerbatimStringTok{r\textquotesingle{}Resistance }\DecValTok{$}\VerbatimStringTok{R}\DecValTok{$}\VerbatimStringTok{ }\KeywordTok{(}\DecValTok{$}\ErrorTok{\textbackslash{}}\VerbatimStringTok{Omega}\DecValTok{$}\KeywordTok{)}\VerbatimStringTok{\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax.set\_ylabel(}\VerbatimStringTok{r\textquotesingle{}}\DecValTok{$}\VerbatimStringTok{V\_J}\DecValTok{$}\VerbatimStringTok{ }\KeywordTok{(}\VerbatimStringTok{Vrms}\KeywordTok{)}\VerbatimStringTok{\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax.grid(color}\OperatorTok{=}\StringTok{\textquotesingle{}\#2A3459\textquotesingle{}}\NormalTok{)}
+
+
+
+\CommentTok{\# plt.grid() \# Turn on the grid}
+\CommentTok{\# plt.title(\textquotesingle{}Johnson Noise Data\textquotesingle{}) \# make a plot title}
+\CommentTok{\# plt.ylabel(r\textquotesingle{}$V\_J$ (Vrms)\textquotesingle{}) \# Make an axis label.  Note the $$ to typeset math}
+\CommentTok{\# plt.xlabel(r\textquotesingle{}Resistance $R$ ($\textbackslash{}Omega$)\textquotesingle{}) \#Another axis label}
+
+\CommentTok{\# Below shows how to make a plot with error bars.  The errors are multiplied by }
+\CommentTok{\# 10 so that the bars are visible. }
+
+\CommentTok{\# If you have no error bars, simply omit the item \textquotesingle{}yerr=J\_294[\textquotesingle{}DV (V)\textquotesingle{}]*10\textquotesingle{}}
+
+\NormalTok{ax.errorbar(J\_294[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{],J\_294[}\StringTok{\textquotesingle{}Vrms (V)\textquotesingle{}}\NormalTok{],}
+\NormalTok{             yerr}\OperatorTok{=}\NormalTok{J\_294[}\StringTok{\textquotesingle{}DV (V)\textquotesingle{}}\NormalTok{]}\OperatorTok{*}\DecValTok{10}\NormalTok{,}
+\NormalTok{             fmt}\OperatorTok{=}\StringTok{\textquotesingle{}o\textquotesingle{}}\NormalTok{,label}\OperatorTok{=}\StringTok{\textquotesingle{}T = 295K\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{ax.errorbar(J\_ln2[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{], J\_ln2[}\StringTok{\textquotesingle{}Vrms (V)\textquotesingle{}}\NormalTok{],}
+\NormalTok{             yerr}\OperatorTok{=}\NormalTok{J\_ln2[}\StringTok{\textquotesingle{}DV (V)\textquotesingle{}}\NormalTok{] }\OperatorTok{*} \DecValTok{10}\NormalTok{,}
+\NormalTok{             fmt}\OperatorTok{=}\StringTok{\textquotesingle{}o\textquotesingle{}}\NormalTok{, label}\OperatorTok{=}\StringTok{\textquotesingle{}T = 77K\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{ax.legend()}\OperatorTok{;} \CommentTok{\# Make a legend}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-8-output-1.png}}
+
+\subsubsection{Include the other data}\label{include-the-other-data}
+
+\begin{quote}
+Repeat the lines in the cell above and include another data set so that
+both the 395K and 77K data are on the same plot.
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# This code was refactored to above.}
+
+\CommentTok{\# \#\# Plot the data sets on one graph}
+\CommentTok{\# \#\# Header commands provided}
+\CommentTok{\#}
+\CommentTok{\# \# Below shows how to make a plot with error bars.  The errors are multiplied by}
+\CommentTok{\# \# 10 so that the bars are visible.}
+\CommentTok{\#}
+\CommentTok{\# \# If you have no error bars, simply omit the item \textquotesingle{}yerr=J\_294[\textquotesingle{}DV (V)\textquotesingle{}]*10\textquotesingle{}}
+\CommentTok{\#}
+\CommentTok{\# plt.errorbar(J\_ln2[\textquotesingle{}R (ohms)\textquotesingle{}], J\_ln2[\textquotesingle{}Vrms (V)\textquotesingle{}],}
+\CommentTok{\#              yerr=J\_ln2[\textquotesingle{}DV (V)\textquotesingle{}] * 10,}
+\CommentTok{\#              fmt=\textquotesingle{}o\textquotesingle{}, label=\textquotesingle{}T = 295K\textquotesingle{})}
+\CommentTok{\# plt.legend();  \# Make a legend}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Exercise 2}\label{exercise-2}
+
+\begin{quote}
+\subsubsection{Part a. Modify the data}\label{part-a.-modify-the-data}
+\end{quote}
+
+\begin{quote}
+Modify the data arrays to obtain the mean square voltages for each
+temperature, and also the difference in the (squared) data for the two
+temperatures, which will help remove the effects of noise in the
+electronics. \textbf{Remember:} You have NumPy/Pandas arrays, so you can
+do each task with a single line of code.
+\end{quote}
+
+\begin{quote}
+Then plot the results, all on one plot so you can compare them visually.
+\end{quote}
+
+\begin{quote}
+\mbox{}%
+\paragraph{For data sets that have uncertainties associated with
+them.}\label{for-data-sets-that-have-uncertainties-associated-with-them.}
+\end{quote}
+
+\begin{quote}
+If you have uncertainties on each data point that you want to carry
+forward in the analysis, when you square the value, the uncertainty is
+NOT also squared. Instead it is multiplied by 2 times the
+\textbar value\textbar. That is, if \(\sigma_x\) is the uncertainty in
+\(x\), the uncertainty in \(x^2\) is \(\sigma_{x^2} = 2|x|\sigma_x\).
+\end{quote}
+
+\begin{quote}
+Another way to work out the uncertainties is to first build arrays of
+uncertainty objects from the data and uncertainty arrays. For example,
+if the data are in an array called \texttt{X} and the uncertainty (i.e.,
+error bars) are in an array called \texttt{sigma\_X}, you can build an
+uncertainty array as follows:
+\end{quote}
+
+\begin{quote}
+\# Import uNumPy functions. You could do this in the first cell import
+uncertainties.unumpy as unp
+
+\# Build an uncertainty array uX = unp.uarray(X, sigma\_X)
+
+\# Square the array, and also propagate uncertainty uX\_sqrd = uX*uX
+
+\# Access the parts of the uncertainty array. This is necessary for
+curve fitting uX\_sqrd\_values = unp.nominal\_values(uX\_sqrd)
+uX\_sqrd\_sigmas = unp.std\_devs(uX\_sqrd)
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Modify the arrays as specified above}
+\CommentTok{\# Lets create the specified data:}
+\ImportTok{import}\NormalTok{ uncertainties.unumpy }\ImportTok{as}\NormalTok{ unp}
+
+\CommentTok{\# Lets start by viewing what is in the arrays}
+
+\NormalTok{johnson\_294}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llllllllll@{}}
+\toprule\noalign{}
+& 40k & 20k & 15k & 9.99k & 7.5k & 4.99k & 2.5k & 1.0k & 0.0K \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.007909 & 0.005793 & 0.005050 & 0.004211 & 0.003701 & 0.002997 &
+0.002196 & 0.001457 & 0.000620 \\
+1 & 0.007962 & 0.005885 & 0.005047 & 0.004180 & 0.003633 & 0.003006 &
+0.002207 & 0.001484 & 0.000624 \\
+2 & 0.007796 & 0.005765 & 0.005031 & 0.004170 & 0.003611 & 0.002980 &
+0.002148 & 0.001482 & 0.000615 \\
+3 & 0.007801 & 0.005848 & 0.005163 & 0.004190 & 0.003652 & 0.003037 &
+0.002192 & 0.001496 & 0.000629 \\
+4 & 0.007821 & 0.005864 & 0.005107 & 0.004182 & 0.003747 & 0.002973 &
+0.002194 & 0.001473 & 0.000625 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Let\textquotesingle{}s start by forming the uncertainty objects:}
+\NormalTok{J\_294[}\StringTok{\textquotesingle{}Vrms (V) unc\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ unp.uarray(J\_294[}\StringTok{\textquotesingle{}Vrms (V)\textquotesingle{}}\NormalTok{], J\_294[}\StringTok{\textquotesingle{}DV (V)\textquotesingle{}}\NormalTok{])}
+\NormalTok{J\_ln2[}\StringTok{\textquotesingle{}Vrms (V) unc\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ unp.uarray(J\_ln2[}\StringTok{\textquotesingle{}Vrms (V)\textquotesingle{}}\NormalTok{], J\_ln2[}\StringTok{\textquotesingle{}DV (V)\textquotesingle{}}\NormalTok{])}
+
+\CommentTok{\# Now lets square the values}
+\NormalTok{J\_294[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ J\_294[}\StringTok{\textquotesingle{}Vrms (V) unc\textquotesingle{}}\NormalTok{] }\OperatorTok{**} \DecValTok{2}
+\NormalTok{J\_ln2[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ J\_ln2[}\StringTok{\textquotesingle{}Vrms (V) unc\textquotesingle{}}\NormalTok{] }\OperatorTok{**} \DecValTok{2}
+
+\CommentTok{\# Finally lets take the difference of 295k and 77k}
+\NormalTok{J\_diff }\OperatorTok{=}\NormalTok{ pd.DataFrame(\{}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{ : J\_294[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{]\})}
+\NormalTok{J\_diff[}\StringTok{\textquotesingle{}Vms (V) diff\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ J\_294[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{] }\OperatorTok{{-}}\NormalTok{ J\_ln2[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{]}
+
+\NormalTok{J\_294}
+\NormalTok{J\_diff}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& R (ohms) & Vms (V) diff \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 40000.0 & (4.31+/-0.12)e-05 \\
+1 & 20000.0 & (2.40+/-0.06)e-05 \\
+2 & 15000.0 & (1.83+/-0.06)e-05 \\
+3 & 9990.0 & (1.243+/-0.019)e-05 \\
+4 & 7500.0 & (9.5+/-0.4)e-06 \\
+5 & 4990.0 & (5.91+/-0.17)e-06 \\
+6 & 2500.0 & (3.20+/-0.11)e-06 \\
+7 & 1000.0 & (1.31+/-0.05)e-06 \\
+8 & 0.0 & (-1+/-8)e-09 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Plot the results}
+\CommentTok{\#\# Header commands provided to format plot}
+\CommentTok{\#\# Uncertainties here are also 10xed to be visible on the plot.}
+\NormalTok{fig\_quad, ax\_quad }\OperatorTok{=}\NormalTok{ plt.subplots()}
+\NormalTok{ax\_quad.grid(color}\OperatorTok{=}\StringTok{\textquotesingle{}\#2A3459\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax\_quad.set\_title(}\StringTok{\textquotesingle{}Johnson Noise Data, in Quadrature\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax\_quad.set\_ylabel(}\VerbatimStringTok{r\textquotesingle{}}\DecValTok{$}\VerbatimStringTok{V}\DecValTok{\^{}}\VerbatimStringTok{2\_J}\DecValTok{$}\VerbatimStringTok{ }\KeywordTok{(}\VerbatimStringTok{Vrms}\DecValTok{$\^{}}\VerbatimStringTok{2}\DecValTok{$}\KeywordTok{)}\VerbatimStringTok{\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax\_quad.set\_xlabel(}\VerbatimStringTok{r\textquotesingle{}Resistance }\DecValTok{$}\VerbatimStringTok{R}\DecValTok{$}\VerbatimStringTok{ }\KeywordTok{(}\DecValTok{$}\ErrorTok{\textbackslash{}}\VerbatimStringTok{Omega}\DecValTok{$}\KeywordTok{)}\VerbatimStringTok{\textquotesingle{}}\NormalTok{)}
+\CommentTok{\#\# Add your code here}
+\NormalTok{ax\_quad.errorbar(J\_294[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{],}
+\NormalTok{                 unp.nominal\_values(J\_294[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{]),}
+\NormalTok{                 unp.std\_devs(J\_294[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{]) }\OperatorTok{*} \DecValTok{10}\NormalTok{,}
+\NormalTok{                 label}\OperatorTok{=}\StringTok{\textquotesingle{}T = 295K\textquotesingle{}}\NormalTok{, fmt}\OperatorTok{=}\StringTok{\textquotesingle{}o\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{ax\_quad.errorbar(J\_ln2[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{],}
+\NormalTok{                 unp.nominal\_values(J\_ln2[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{]),}
+\NormalTok{                 unp.std\_devs(J\_ln2[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{]) }\OperatorTok{*} \DecValTok{10}\NormalTok{,}
+\NormalTok{                 label}\OperatorTok{=}\StringTok{\textquotesingle{}T = 77K\textquotesingle{}}\NormalTok{, fmt}\OperatorTok{=}\StringTok{\textquotesingle{}o\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax\_quad.errorbar(J\_diff[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{],}
+\NormalTok{                 unp.nominal\_values(J\_diff[}\StringTok{\textquotesingle{}Vms (V) diff\textquotesingle{}}\NormalTok{]),}
+\NormalTok{                 unp.std\_devs(J\_diff[}\StringTok{\textquotesingle{}Vms (V) diff\textquotesingle{}}\NormalTok{]) }\OperatorTok{*} \DecValTok{10}\NormalTok{,}
+\NormalTok{                 label}\OperatorTok{=}\StringTok{\textquotesingle{}T = diff\textquotesingle{}}\NormalTok{, fmt}\OperatorTok{=}\StringTok{\textquotesingle{}o\textquotesingle{}}\NormalTok{)}
+
+\NormalTok{ax\_quad.legend()}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-13-output-1.png}}
+
+\subsubsection{Part b. Fit the modified
+data}\label{part-b.-fit-the-modified-data}
+
+\begin{quote}
+To fit the data set to a line, make use of the \textbf{LMFit} package.
+It is a useful add-on to the SciPy fitting functions. This package
+simplifies fitting data to a variety of standard functions. See the
+\href{https://lmfit.github.io/lmfit-py/index.html}{Lmfit Documentation}
+for a full discussion. The package is quite powerful, but for basic
+fitting with common functions, it is very easy to use.
+\end{quote}
+
+\begin{quote}
+\mbox{}%
+\paragraph{Example: Fitting a line}\label{example-fitting-a-line}
+\end{quote}
+
+\begin{quote}
+The example below shows how to use the package to fit data to a line,
+obtain the fit parameters along with uncertainties, and then plot the
+data and fit. Execute the cells and study how it works. (Note: the data
+come from a calibration problem in physics 331)
+\end{quote}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# This cell only creates arrays of x and y data to feed to the fit example in the next cell.}
+\CommentTok{\# Calibration Data from a physics 331 experiment.}
+\CommentTok{\# First column is wavelength (nm), second is carriage position (cm)}
+\CommentTok{\#}
+\NormalTok{Cal\_data }\OperatorTok{=}\NormalTok{ np.array([}
+\NormalTok{    [}\FloatTok{643.85}\NormalTok{, }\FloatTok{41.43}\NormalTok{],}
+\NormalTok{    [}\FloatTok{579.07}\NormalTok{, }\FloatTok{37.24}\NormalTok{],}
+\NormalTok{    [}\FloatTok{576.96}\NormalTok{, }\FloatTok{37.11}\NormalTok{],}
+\NormalTok{    [}\FloatTok{546.08}\NormalTok{, }\FloatTok{35.10}\NormalTok{],}
+\NormalTok{    [}\FloatTok{508.58}\NormalTok{, }\FloatTok{32.68}\NormalTok{],}
+\NormalTok{    [}\FloatTok{479.99}\NormalTok{, }\FloatTok{30.83}\NormalTok{],}
+\NormalTok{    [}\FloatTok{467.81}\NormalTok{, }\FloatTok{30.04}\NormalTok{],}
+\NormalTok{    [}\FloatTok{435.83}\NormalTok{, }\FloatTok{27.96}\NormalTok{],}
+\NormalTok{    [}\FloatTok{404.66}\NormalTok{, }\FloatTok{25.98}\NormalTok{]])}
+
+\CommentTok{\# Array slicing separates x (position) and y (wavelength)}
+\CommentTok{\# Goal of calibration is to be able to feed in a position and obtain a wavelength}
+\NormalTok{wavelength }\OperatorTok{=}\NormalTok{ Cal\_data[:,}\DecValTok{0}\NormalTok{]}
+\NormalTok{position }\OperatorTok{=}\NormalTok{ Cal\_data[:,}\DecValTok{1}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+The following cell executes the fitting calculations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# imports a linear fitting model from lmfit  }
+\CommentTok{\# ONLY IMPORT ONCE IN A NOTEBOOK}
+\ImportTok{from}\NormalTok{ lmfit.models }\ImportTok{import}\NormalTok{ LinearModel, DimensionalError}
+
+\CommentTok{\# create an instance of the model}
+\CommentTok{\# You only need to do this once in a notebook}
+\NormalTok{line }\OperatorTok{=}\NormalTok{ LinearModel()}
+
+\CommentTok{\# One must have a guess of the parameters. The guess() method works with most of the standard}
+\CommentTok{\# lmfit models}
+
+\CommentTok{\# The return value is a Parameters structure.  See the documentation.}
+\NormalTok{param\_guess }\OperatorTok{=}\NormalTok{ line.guess(wavelength, x}\OperatorTok{=}\NormalTok{position)}
+
+\CommentTok{\# The line below executes the fitting process.  The results are returned to "line\_fit"}
+\NormalTok{line\_fit }\OperatorTok{=}\NormalTok{ line.fit(wavelength, param\_guess, x}\OperatorTok{=}\NormalTok{position)}
+
+\CommentTok{\# This prints the results in an easy to read form}
+\BuiltInTok{print}\NormalTok{(line\_fit.fit\_report())}
+
+\CommentTok{\#Then you can plot the results quickly just to see how it looks using the plot() method}
+\NormalTok{line\_fit.plot()}
+\CommentTok{\# Optional: Change axis labels from default \textquotesingle{}X\textquotesingle{} vs. \textquotesingle{}Y\textquotesingle{}.}
+\NormalTok{plt.xlabel(}\StringTok{\textquotesingle{}Carriage position (cm)\textquotesingle{}}\NormalTok{)}
+\NormalTok{plt.ylabel(}\StringTok{\textquotesingle{}Emission wavelength (nm)\textquotesingle{}}\NormalTok{)}\OperatorTok{;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 4
+    # data points      = 9
+    # variables        = 2
+    chi-square         = 0.18041902
+    reduced chi-square = 0.02577415
+    Akaike info crit   = -31.1872805
+    Bayesian info crit = -30.7928313
+    R-squared          = 0.99999620
+[[Variables]]
+    slope:      15.4639413 +/- 0.01139807 (0.07%) (init = 15.46394)
+    intercept:  3.20598011 +/- 0.38164182 (11.90%) (init = 3.20598)
+[[Correlations]] (unreported correlations are < 0.100)
+    C(slope, intercept) = -0.9901
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-15-output-2.png}}
+
+Fit each to a line and obtain the slope with uncertainty. Plot the data
+with the fit lines.
+
+First, I'll make functions to clean up the coding.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Defines a function to do the work.  Study it.  If you don\textquotesingle{}t understand how this works,}
+\CommentTok{\#\# find out by asking questions and or studying the functions in the code.}
+
+\KeywordTok{def}\NormalTok{ line\_fit\_and\_plot(xdata, ydata, yerr}\OperatorTok{=}\VariableTok{None}\NormalTok{, model}\OperatorTok{=}\NormalTok{LinearModel(), xlabel}\OperatorTok{=}\StringTok{\textquotesingle{}X\textquotesingle{}}\NormalTok{, ylabel}\OperatorTok{=}\StringTok{\textquotesingle{}Y\textquotesingle{}}\NormalTok{):}
+    \CommentTok{\textquotesingle{}\textquotesingle{}\textquotesingle{}}
+\CommentTok{    Fit a line or curve, and plot/show the fit results.}
+\CommentTok{    The function returns a parameters object with the fit parameters}
+\CommentTok{    \textquotesingle{}\textquotesingle{}\textquotesingle{}}
+\NormalTok{    param\_guess }\OperatorTok{=}\NormalTok{ model.guess(ydata, x}\OperatorTok{=}\NormalTok{xdata)}
+    \ControlFlowTok{if}\NormalTok{ (yerr }\KeywordTok{is} \VariableTok{None}\NormalTok{):}
+\NormalTok{        model\_fit }\OperatorTok{=}\NormalTok{ model.fit(ydata, param\_guess, x}\OperatorTok{=}\NormalTok{xdata)}
+    \ControlFlowTok{else}\NormalTok{:}
+\NormalTok{        model\_fit }\OperatorTok{=}\NormalTok{ model.fit(ydata, param\_guess, x}\OperatorTok{=}\NormalTok{xdata, weights}\OperatorTok{=}\DecValTok{1}\OperatorTok{/}\NormalTok{yerr)}
+    \BuiltInTok{print}\NormalTok{(model\_fit.fit\_report(show\_correl}\OperatorTok{=}\VariableTok{False}\NormalTok{))}
+\NormalTok{    model\_fit.plot()}
+\NormalTok{    plt.xlabel(xlabel)}
+\NormalTok{    plt.ylabel(ylabel)}\OperatorTok{;}
+    \ControlFlowTok{return}\NormalTok{ model\_fit.params}
+
+\CommentTok{\#\# This function use the Uncertainties function to make an uncertainty object}
+
+\KeywordTok{def}\NormalTok{ get\_uslope(params):}
+    \ControlFlowTok{return}\NormalTok{ unc.ufloat(params[}\StringTok{\textquotesingle{}slope\textquotesingle{}}\NormalTok{].value, params[}\StringTok{\textquotesingle{}slope\textquotesingle{}}\NormalTok{].stderr)}
+\end{Highlighting}
+\end{Shaded}
+
+Then run the functions.
+
+\subsubsection{First, for the 300k Data:}\label{first-for-the-300k-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Use the functions above to run the fit for the modified 295K data}
+\CommentTok{\#\# and save the fit parameters.  Then pull out the slope}
+\CommentTok{\#\# Here is how you would use the above functions with the example data:}
+
+\CommentTok{\# Run the fit}
+\CommentTok{\# example\_fit\_params = line\_fit\_and\_plot(position,wavelength,}
+\CommentTok{\#                                        xlabel=\textquotesingle{}Carriage position (cm)\textquotesingle{},ylabel=\textquotesingle{}Emission wavelength (nm)\textquotesingle{})}
+
+\NormalTok{J\_294\_fit\_params }\OperatorTok{=}\NormalTok{ line\_fit\_and\_plot(J\_294[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{],}
+\NormalTok{                                     unp.nominal\_values(J\_294[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{]),}
+\NormalTok{                                     unp.std\_devs(J\_294[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{]),)}
+
+
+\CommentTok{\# Obtain the slope and its uncertainty into an uncertainty object}
+\CommentTok{\# slope\_with\_uncertainty = get\_uslope(example\_fit\_params)}
+\NormalTok{slope\_with\_uncertainty }\OperatorTok{=}\NormalTok{ get\_uslope(J\_294\_fit\_params)}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}}\CharTok{\textbackslash{}n}\StringTok{Slope = \{:.2uP\}\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(slope\_with\_uncertainty))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 7
+    # data points      = 9
+    # variables        = 2
+    chi-square         = 42.9965765
+    reduced chi-square = 6.14236807
+    Akaike info crit   = 18.0750633
+    Bayesian info crit = 18.4695124
+    R-squared          = 0.98552059
+[[Variables]]
+    slope:      1.6997e-09 +/- 2.3043e-11 (1.36%) (init = 1.544299e-09)
+    intercept:  3.9117e-07 +/- 1.5978e-08 (4.08%) (init = 1.438028e-06)
+
+Slope = (1.700±0.023)×10⁻⁹
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-17-output-2.png}}
+
+\subsubsection{For the 77k Data}\label{for-the-77k-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{J\_ln2\_fit\_params }\OperatorTok{=}\NormalTok{ line\_fit\_and\_plot(J\_ln2[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{],}
+\NormalTok{                                     unp.nominal\_values(J\_ln2[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{]),}
+\NormalTok{                                     unp.std\_devs(J\_ln2[}\StringTok{\textquotesingle{}Vms (V)\textquotesingle{}}\NormalTok{]),)}
+
+
+\CommentTok{\# Obtain the slope and its uncertainty into an uncertainty object}
+\CommentTok{\# slope\_with\_uncertainty = get\_uslope(example\_fit\_params)}
+\NormalTok{slope\_with\_uncertainty }\OperatorTok{=}\NormalTok{ get\_uslope(J\_ln2\_fit\_params)}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}}\CharTok{\textbackslash{}n}\StringTok{Slope = \{:.2uP\}\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(slope\_with\_uncertainty))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 7
+    # data points      = 9
+    # variables        = 2
+    chi-square         = 19.9694049
+    reduced chi-square = 2.85277212
+    Akaike info crit   = 11.1727909
+    Bayesian info crit = 11.5672401
+    R-squared          = 0.99715304
+[[Variables]]
+    slope:      4.7755e-10 +/- 7.1432e-12 (1.50%) (init = 4.580018e-10)
+    intercept:  3.9135e-07 +/- 8.4604e-09 (2.16%) (init = 5.496959e-07)
+
+Slope = (4.776±0.071)×10⁻¹⁰
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-18-output-2.png}}
+
+\subsubsection{For the Diff Data}\label{for-the-diff-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\CommentTok{\# Finally for the diff dataset"}
+
+\NormalTok{J\_diff\_fit\_params }\OperatorTok{=}\NormalTok{ line\_fit\_and\_plot(J\_diff[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{],}
+\NormalTok{                                     unp.nominal\_values(J\_diff[}\StringTok{\textquotesingle{}Vms (V) diff\textquotesingle{}}\NormalTok{]),}
+\NormalTok{                                     unp.std\_devs(J\_diff[}\StringTok{\textquotesingle{}Vms (V) diff\textquotesingle{}}\NormalTok{]),)}
+
+
+\CommentTok{\# Obtain the slope and its uncertainty into an uncertainty object}
+\CommentTok{\# slope\_with\_uncertainty = get\_uslope(example\_fit\_params)}
+\NormalTok{slope\_with\_uncertainty }\OperatorTok{=}\NormalTok{ get\_uslope(J\_diff\_fit\_params)}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}}\CharTok{\textbackslash{}n}\StringTok{Slope = \{:.2uP\}\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(slope\_with\_uncertainty))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 7
+    # data points      = 9
+    # variables        = 2
+    chi-square         = 30.0805152
+    reduced chi-square = 4.29721646
+    Akaike info crit   = 14.8598775
+    Bayesian info crit = 15.2543266
+    R-squared          = 0.97983080
+[[Variables]]
+    slope:      1.2139e-09 +/- 2.3781e-11 (1.96%) (init = 1.086297e-09)
+    intercept:  2.6615e-09 +/- 1.7086e-08 (641.99%) (init = 8.883324e-07)
+
+Slope = (1.214±0.024)×10⁻⁹
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-19-output-2.png}}
+
+\subsubsection{Calculate a Boltzmann
+constant}\label{calculate-a-boltzmann-constant}
+
+From the results, calculate the implied Boltzmann constant (with
+uncertainty).
+
+Revised gain of low-noise amplifier \(G=10122\pm35\) (as of July 2021,
+DBP)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Create uncertainties objects for the other quantities.  The first two are examples}
+\NormalTok{T\_295 }\OperatorTok{=}\NormalTok{ unc.ufloat(}\FloatTok{295.0}\NormalTok{,}\FloatTok{1.0}\NormalTok{) }\CommentTok{\# K}
+\NormalTok{G }\OperatorTok{=}\NormalTok{ unc.ufloat(}\DecValTok{10122}\NormalTok{,}\DecValTok{35}\NormalTok{) }\CommentTok{\# unitless}
+\NormalTok{k\_B }\OperatorTok{=}\NormalTok{ const.Boltzmann }\CommentTok{\# J/K Accepted value of Boltsmann constant from SciPy constants library.}
+\CommentTok{\# You do the rest}
+
+\NormalTok{k\_295 }\OperatorTok{=}\NormalTok{ get\_uslope(J\_294\_fit\_params) }\OperatorTok{/}\NormalTok{ (G}\OperatorTok{**}\DecValTok{2} \OperatorTok{*} \DecValTok{4} \OperatorTok{*}\NormalTok{ T\_295 }\OperatorTok{*} \DecValTok{1000}\NormalTok{)}
+
+\CommentTok{\#\# Calculate and print k\_Boltzmann}
+\CommentTok{\# Use the following print line:}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}Boltzmann constant from T = 295K data = \{:.2uP\} J/K\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(k\_295))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}Accepted value = }\SpecialCharTok{\{:.4g\}}\StringTok{ J/K\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(k\_B))}
+
+\DecValTok{1} \OperatorTok{/}\NormalTok{ (}\DecValTok{4} \OperatorTok{*}\NormalTok{ T\_295 }\OperatorTok{*} \DecValTok{1000}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Boltzmann constant from T = 295K data = (1.406±0.022)×10⁻²³ J/K
+Accepted value = 1.381e-23 J/K
+\end{verbatim}
+
+\begin{verbatim}
+8.474576271186441e-07+/-2.872737719046251e-09
+\end{verbatim}
+
+\subsubsection{77 K data}\label{k-data}
+
+Repeat the process for the 77K data set.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Repeat for the 77K data}
+
+\NormalTok{T\_77 }\OperatorTok{=}\NormalTok{ unc.ufloat(}\FloatTok{77.0}\NormalTok{,}\FloatTok{1.0}\NormalTok{)}
+\NormalTok{k\_ln2 }\OperatorTok{=}\NormalTok{ get\_uslope(J\_ln2\_fit\_params) }\OperatorTok{/}\NormalTok{ (G}\OperatorTok{**}\DecValTok{2} \OperatorTok{*} \DecValTok{4} \OperatorTok{*}\NormalTok{ T\_77 }\OperatorTok{*} \DecValTok{1000}\NormalTok{)}
+
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}Boltzmann constant from T = 77K data = \{:.2uP\} J/K\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(k\_ln2))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}Accepted value = }\SpecialCharTok{\{:.4g\}}\StringTok{ J/K\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(k\_B))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Boltzmann constant from T = 77K data = (1.513±0.032)×10⁻²³ J/K
+Accepted value = 1.381e-23 J/K
+\end{verbatim}
+
+And finally, the difference data
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Repeat for the "difference" data (295K{-}77K) subracted in quadrature}
+\NormalTok{T\_diff }\OperatorTok{=}\NormalTok{ T\_295 }\OperatorTok{{-}}\NormalTok{ T\_77}
+\NormalTok{k\_diff }\OperatorTok{=}\NormalTok{ get\_uslope(J\_diff\_fit\_params) }\OperatorTok{/}\NormalTok{ (G}\OperatorTok{**}\DecValTok{2} \OperatorTok{*} \DecValTok{4} \OperatorTok{*}\NormalTok{ T\_diff }\OperatorTok{*} \DecValTok{1000}\NormalTok{)}
+
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}Boltzmann constant from T = 77K data = \{:.2uP\} J/K\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(k\_diff))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}Accepted value = }\SpecialCharTok{\{:.4g\}}\StringTok{ J/K\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(k\_B))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+Boltzmann constant from T = 77K data = (1.359±0.030)×10⁻²³ J/K
+Accepted value = 1.381e-23 J/K
+\end{verbatim}
+
+\subsubsection{Plot everything on one
+graph}\label{plot-everything-on-one-graph}
+
+Make a single plot that shows all three sets of data (as points) and the
+three fit lines (as lines). Include a legend.
+
+The cell below shows how to create a fit line using an arbitrary set of
+x-values based on the range of x data. It uses the example data sets.
+
+\paragraph{Recall}\label{recall}
+
+Let's start with the plot \texttt{ax\_grid}, which, if we recall, is the
+graph with all the datapoints. we have 3 sets of line data that we will
+now fit into these graphs: * \_295 300k * \_ln2 77k * \_diff difference
+in the data.
+
+Lets view our original graph first:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Lets replot based on the Gain.}
+\CommentTok{\# fig\_john, ax\_john = plt.subplots()}
+\CommentTok{\#}
+\CommentTok{\#}
+\CommentTok{\# ax\_john.grid()}
+\CommentTok{\# ax\_john.set\_title(\textquotesingle{}Johnson Noise Data, in Quadrature\textquotesingle{})}
+\CommentTok{\# ax\_john.set\_ylabel(r\textquotesingle{}$V\^{}2\_J$ (Vrms$\^{}2$)\textquotesingle{})}
+\CommentTok{\# ax\_john.set\_xlabel(r\textquotesingle{}Resistance $R$ ($\textbackslash{}Omega$)\textquotesingle{})}
+\CommentTok{\# ax\_john.set\_yli}
+\CommentTok{\# ax\_john.autoscale(enable=True, axis=ax\_john.get\_yaxis())}
+\CommentTok{\# \#}
+\CommentTok{\# ax\_john.errorbar(J\_294[\textquotesingle{}R (ohms)\textquotesingle{}],}
+\CommentTok{\#                  unp.nominal\_values(J\_294[\textquotesingle{}Vms (V)\textquotesingle{}] / G),}
+\CommentTok{\#                  unp.std\_devs(J\_294[\textquotesingle{}Vms (V)\textquotesingle{}]) * 10,}
+\CommentTok{\#                  label=\textquotesingle{}T = 295K\textquotesingle{}, fmt=\textquotesingle{}o\textquotesingle{})}
+
+\CommentTok{\# ax\_john.errorbar(J\_ln2[\textquotesingle{}R (ohms)\textquotesingle{}],}
+\CommentTok{\#                  unp.nominal\_values(J\_ln2[\textquotesingle{}Vms (V)\textquotesingle{}]),}
+\CommentTok{\#                  unp.std\_devs(J\_ln2[\textquotesingle{}Vms (V)\textquotesingle{}]) * 10,}
+\CommentTok{\#                  label=\textquotesingle{}T = 77K\textquotesingle{}, fmt=\textquotesingle{}o\textquotesingle{})}
+\CommentTok{\# ax\_john.errorbar(J\_diff[\textquotesingle{}R (ohms)\textquotesingle{}],}
+\CommentTok{\#                  unp.nominal\_values(J\_diff[\textquotesingle{}Vms (V) diff\textquotesingle{}]),}
+\CommentTok{\#                  unp.std\_devs(J\_diff[\textquotesingle{}Vms (V) diff\textquotesingle{}]) * 10,}
+\CommentTok{\#                  label=\textquotesingle{}T = diff\textquotesingle{}, fmt=\textquotesingle{}o\textquotesingle{})}
+
+\NormalTok{plt.show()}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph{Adding Fit lines}\label{adding-fit-lines}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{type}\NormalTok{(J\_294[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{].}\BuiltInTok{min}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+numpy.float64
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# start with \_294}
+
+\NormalTok{xvalues\_294 }\OperatorTok{=}\NormalTok{ np.linspace(J\_294[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{].}\BuiltInTok{min}\NormalTok{(), J\_294[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{].}\BuiltInTok{max}\NormalTok{(), }\DecValTok{100}\NormalTok{)}
+\NormalTok{yvalues\_294 }\OperatorTok{=}\NormalTok{ line.}\BuiltInTok{eval}\NormalTok{(J\_294\_fit\_params, x}\OperatorTok{=}\NormalTok{xvalues\_294)}
+
+
+\NormalTok{xvalues\_ln2 }\OperatorTok{=}\NormalTok{ np.linspace(J\_ln2[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{].}\BuiltInTok{min}\NormalTok{(), J\_ln2[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{].}\BuiltInTok{max}\NormalTok{(), }\DecValTok{100}\NormalTok{)}
+\NormalTok{yvalues\_ln2 }\OperatorTok{=}\NormalTok{ line.}\BuiltInTok{eval}\NormalTok{(J\_ln2\_fit\_params, x}\OperatorTok{=}\NormalTok{xvalues\_ln2)}
+
+
+\NormalTok{xvalues\_diff }\OperatorTok{=}\NormalTok{ np.linspace(J\_diff[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{].}\BuiltInTok{min}\NormalTok{(), J\_diff[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{].}\BuiltInTok{max}\NormalTok{(), }\DecValTok{100}\NormalTok{)}
+\NormalTok{yvalues\_diff }\OperatorTok{=}\NormalTok{ line.}\BuiltInTok{eval}\NormalTok{(J\_diff\_fit\_params, x}\OperatorTok{=}\NormalTok{xvalues\_diff)}
+
+
+\NormalTok{yvalues\_294}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+array([3.91171144e-07, 1.07791840e-06, 1.76466565e-06, 2.45141290e-06,
+       3.13816015e-06, 3.82490740e-06, 4.51165466e-06, 5.19840191e-06,
+       5.88514916e-06, 6.57189641e-06, 7.25864366e-06, 7.94539091e-06,
+       8.63213817e-06, 9.31888542e-06, 1.00056327e-05, 1.06923799e-05,
+       1.13791272e-05, 1.20658744e-05, 1.27526217e-05, 1.34393689e-05,
+       1.41261162e-05, 1.48128634e-05, 1.54996107e-05, 1.61863579e-05,
+       1.68731052e-05, 1.75598524e-05, 1.82465997e-05, 1.89333469e-05,
+       1.96200942e-05, 2.03068414e-05, 2.09935887e-05, 2.16803360e-05,
+       2.23670832e-05, 2.30538305e-05, 2.37405777e-05, 2.44273250e-05,
+       2.51140722e-05, 2.58008195e-05, 2.64875667e-05, 2.71743140e-05,
+       2.78610612e-05, 2.85478085e-05, 2.92345557e-05, 2.99213030e-05,
+       3.06080502e-05, 3.12947975e-05, 3.19815447e-05, 3.26682920e-05,
+       3.33550392e-05, 3.40417865e-05, 3.47285337e-05, 3.54152810e-05,
+       3.61020282e-05, 3.67887755e-05, 3.74755227e-05, 3.81622700e-05,
+       3.88490173e-05, 3.95357645e-05, 4.02225118e-05, 4.09092590e-05,
+       4.15960063e-05, 4.22827535e-05, 4.29695008e-05, 4.36562480e-05,
+       4.43429953e-05, 4.50297425e-05, 4.57164898e-05, 4.64032370e-05,
+       4.70899843e-05, 4.77767315e-05, 4.84634788e-05, 4.91502260e-05,
+       4.98369733e-05, 5.05237205e-05, 5.12104678e-05, 5.18972150e-05,
+       5.25839623e-05, 5.32707095e-05, 5.39574568e-05, 5.46442040e-05,
+       5.53309513e-05, 5.60176985e-05, 5.67044458e-05, 5.73911931e-05,
+       5.80779403e-05, 5.87646876e-05, 5.94514348e-05, 6.01381821e-05,
+       6.08249293e-05, 6.15116766e-05, 6.21984238e-05, 6.28851711e-05,
+       6.35719183e-05, 6.42586656e-05, 6.49454128e-05, 6.56321601e-05,
+       6.63189073e-05, 6.70056546e-05, 6.76924018e-05, 6.83791491e-05])
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Finally, we plot:}
+
+\NormalTok{ax\_quad.plot(xvalues\_294, yvalues\_294, color}\OperatorTok{=}\StringTok{\textquotesingle{}blue\textquotesingle{}}\NormalTok{, label}\OperatorTok{=}\StringTok{\textquotesingle{}295K fit\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax\_quad.plot(xvalues\_ln2, yvalues\_ln2, color}\OperatorTok{=}\StringTok{\textquotesingle{}yellow\textquotesingle{}}\NormalTok{, label}\OperatorTok{=}\StringTok{\textquotesingle{}77K fit\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax\_quad.plot(xvalues\_diff, yvalues\_diff, color}\OperatorTok{=}\StringTok{\textquotesingle{}purple\textquotesingle{}}\NormalTok{, label}\OperatorTok{=}\StringTok{\textquotesingle{}diff fit\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax\_quad.legend()}
+\NormalTok{ax\_quad.grid(color}\OperatorTok{=}\StringTok{\textquotesingle{}\#2A3459\textquotesingle{}}\NormalTok{)}
+\CommentTok{\# Let\textquotesingle{}s also add the slope data:}
+
+
+
+\NormalTok{display(fig\_quad)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-26-output-1.png}}
+
+\subsubsection{Part c.}\label{part-c.}
+
+Summary of results for Boltsmann constant:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Summarize the results in one table}
+\CommentTok{\#\# Like so:}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}  T (K)  |  k\_B (J/K)   \textquotesingle{}}\NormalTok{)}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}{-}{-}{-}{-}{-}{-}{-}{-}{-}|{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}\textquotesingle{}}\NormalTok{)}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}   295   | \{:.1uP\}\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(k\_295))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}    77   | \{:.1uP\}\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(k\_ln2))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{} 295{-}77  | \{:.1uP\}\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(k\_diff))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}Accepted | }\SpecialCharTok{\{:10.4g\}}\StringTok{\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(k\_B))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+  T (K)  |  k_B (J/K)   
+---------|--------------------
+   295   | (1.41±0.02)×10⁻²³
+    77   | (1.51±0.03)×10⁻²³
+ 295-77  | (1.36±0.03)×10⁻²³
+Accepted |  1.381e-23
+\end{verbatim}
+
+\subsection{Exercise 3: Noise Figure}\label{exercise-3-noise-figure}
+
+Calculate the ``noise figure'' for the low-noise amp, as described in
+the instructions.
+
+The noise figure is defined:
+
+\[ NF = 20\log_{10}\frac{V_{rms}(R)}{G\times\sqrt{4k_BTRB}} \; \text{dB}\]
+
+Please limit the noise figure to 2 digits beyond the decimal point.
+
+Note: It clearly does not work for \(R=0\). You will need to leave this
+out of the calculations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\ImportTok{from}\NormalTok{ uncertainties }\ImportTok{import}\NormalTok{ umath}
+\CommentTok{\#\# Calculate the Noise figure for the various values of R at}
+\CommentTok{\#\# room temperature and display it as a table or a plot}
+
+\CommentTok{\#\# Lets define a function to handle everything for us:}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\KeywordTok{def}\NormalTok{ NF\_calc(R, Vrms, T, gain }\OperatorTok{=}\NormalTok{ G, k\_boltz }\OperatorTok{=}\NormalTok{ k\_B):}
+    \ControlFlowTok{if}\NormalTok{ (R }\OperatorTok{==} \DecValTok{0}\NormalTok{):}
+        \ControlFlowTok{return}\NormalTok{ np.nan}\CommentTok{\# For the 0 Edge Case}
+    \ControlFlowTok{return}\NormalTok{  Vrms }\OperatorTok{/}\NormalTok{ (gain }\OperatorTok{*}\NormalTok{ umath.sqrt(}\DecValTok{4} \OperatorTok{*}\NormalTok{ k\_boltz }\OperatorTok{*}\NormalTok{ T }\OperatorTok{*}\NormalTok{ R }\OperatorTok{*} \DecValTok{1000}\NormalTok{ ))}
+
+\KeywordTok{def}\NormalTok{ nf\_izer(target0, target1, temp):}
+\NormalTok{    result }\OperatorTok{=} \BuiltInTok{list}\NormalTok{()}
+    \ControlFlowTok{if} \BuiltInTok{len}\NormalTok{(target0) }\OperatorTok{!=} \BuiltInTok{len}\NormalTok{(target1):}
+        \ControlFlowTok{raise} \PreprocessorTok{ValueError}\NormalTok{(}\StringTok{"Not the right length"}\NormalTok{)}
+    \ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\BuiltInTok{len}\NormalTok{(target0)):}
+\NormalTok{        result.append(NF\_calc(target0.iloc[i], target1.iloc[i], temp))}
+    \ControlFlowTok{return}\NormalTok{ result}
+
+\NormalTok{NF\_294 }\OperatorTok{=}\NormalTok{ nf\_izer(J\_294[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{], J\_294[}\StringTok{\textquotesingle{}Vrms (V)\textquotesingle{}}\NormalTok{], T\_295)}
+\NormalTok{NF\_ln2 }\OperatorTok{=}\NormalTok{ nf\_izer(J\_ln2[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{], J\_ln2[}\StringTok{\textquotesingle{}Vrms (V)\textquotesingle{}}\NormalTok{], T\_77)}
+\NormalTok{NF\_diff }\OperatorTok{=}\NormalTok{ nf\_izer(J\_diff[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{], J\_diff[}\StringTok{\textquotesingle{}Vms (V) diff\textquotesingle{}}\NormalTok{].}\BuiltInTok{apply}\NormalTok{(np.}\BuiltInTok{abs}\NormalTok{).}\BuiltInTok{apply}\NormalTok{(umath.sqrt), T\_diff)}
+
+\NormalTok{summary }\OperatorTok{=}\NormalTok{ pd.DataFrame(\{}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{: J\_294[}\StringTok{\textquotesingle{}R (ohms)\textquotesingle{}}\NormalTok{], }\StringTok{\textquotesingle{}nf\_294\textquotesingle{}}\NormalTok{ : NF\_294, }\StringTok{\textquotesingle{}nf\_ln2\textquotesingle{}}\NormalTok{ : NF\_ln2, }\StringTok{\textquotesingle{}nf\_diff\textquotesingle{}}\NormalTok{ : NF\_diff\})}
+
+\NormalTok{summary}
+\CommentTok{\# first, lets create staging arrays}
+\CommentTok{\# NF\_294 = np.zeros\_like(J\_294[\textquotesingle{}R (ohms)\textquotesingle{}])}
+\CommentTok{\# NF\_ln2 = np.zeros\_like(J\_ln2[\textquotesingle{}R (ohms)\textquotesingle{}])}
+\CommentTok{\# NF\_diff = np.zeros\_like(J\_diff[\textquotesingle{}R (ohms)\textquotesingle{}])}
+
+\CommentTok{\# now,}
+
+
+\CommentTok{\# Next we\textquotesingle{}ll create a smplified dataframe}
+\CommentTok{\# big = pd.DataFrame(\{\textquotesingle{}R (ohms)\textquotesingle{}: J\_294[\textquotesingle{}R (ohms)\textquotesingle{}],}
+\CommentTok{\#                         \textquotesingle{}Vrms (V)\_294\textquotesingle{}: J\_294[\textquotesingle{}Vrms (V)\textquotesingle{}],}
+\CommentTok{\#                         \textquotesingle{}Vrms (V)\_ln2\textquotesingle{}: J\_ln2[\textquotesingle{}Vrms (V)\textquotesingle{}],}
+\CommentTok{\#                         \textquotesingle{}Vrms (V)\_diff\textquotesingle{}: J\_diff[\textquotesingle{}Vms (V) diff\textquotesingle{}].apply(np.abs).apply(unp.sqrt),}
+\CommentTok{\#                     \})}
+\CommentTok{\# big}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+/home/coyotedark/Documents/uw/phys/431/johnson-and-shot-noise-main/.venv/lib/python3.14/site-packages/pandas/core/internals/blocks.py:347: FutureWarning: AffineScalarFunc.__abs__() is deprecated. It will be removed in a future release.
+  result = func(self.values, **kwargs)
+\end{verbatim}
+
+\begin{longtable}[]{@{}lllll@{}}
+\toprule\noalign{}
+& R (ohms) & nf\_294 & nf\_ln2 & nf\_diff \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 40000.0 & 0.962+/-0.004 & 1.035+/-0.008 & 0.934+/-0.014 \\
+1 & 20000.0 & 1.009+/-0.004 & 1.072+/-0.008 & 0.986+/-0.014 \\
+2 & 15000.0 & 1.015+/-0.004 & 1.069+/-0.008 & 0.995+/-0.016 \\
+3 & 9990.0 & 1.025+/-0.004 & 1.083+/-0.008 & 1.004+/-0.009 \\
+4 & 7500.0 & 1.037+/-0.004 & 1.106+/-0.008 & 1.011+/-0.023 \\
+5 & 4990.0 & 1.039+/-0.004 & 1.190+/-0.009 & 0.980+/-0.015 \\
+6 & 2500.0 & 1.071+/-0.004 & 1.207+/-0.009 & 1.018+/-0.019 \\
+7 & 1000.0 & 1.144+/-0.004 & 1.419+/-0.010 & 1.030+/-0.019 \\
+8 & 0.0 & NaN & NaN & NaN \\
+\end{longtable}
+
+\subsection{Shot Noise Analysis}\label{shot-noise-analysis}
+
+\begin{quote}
+This is very similar to the Johnson noise analysis.
+\end{quote}
+
+\subsubsection{Read in the data}\label{read-in-the-data}
+
+\begin{quote}
+For data structure type ``1'', column names like ``0.1202mA'' need to
+split at \texttt{m} to convert the current labels into currents.
+\end{quote}
+
+For the Shot Noise data, due to the battery constraints, we opted for
+the automated collection of averages. This, however, means we do not
+have the standard deviation. This means uncertainties will not be
+reported.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{shot }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}./rawData/Johnson data {-} shot.csv\textquotesingle{}}\NormalTok{)}
+\NormalTok{shot }\OperatorTok{=}\NormalTok{ shot.rename(columns}\OperatorTok{=}\NormalTok{\{}\StringTok{\textquotesingle{}Emission Current\textquotesingle{}}\NormalTok{ : }\StringTok{\textquotesingle{}Emission Current (A)\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Avr\textquotesingle{}}\NormalTok{ : }\StringTok{\textquotesingle{}Average (Vrms)\textquotesingle{}}\NormalTok{\}, errors}\OperatorTok{=}\StringTok{\textquotesingle{}raise\textquotesingle{}}\NormalTok{)}
+\NormalTok{shot[}\StringTok{\textquotesingle{}Emission Current (A)\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ shot[}\StringTok{"Emission Current (A)"}\NormalTok{] }\OperatorTok{/} \DecValTok{1000}
+
+
+\NormalTok{shot}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& Emission Current (A) & Average (Vrms) \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.000000 & 0.004807 \\
+1 & 0.000010 & 0.007450 \\
+2 & 0.000011 & 0.007873 \\
+3 & 0.000012 & 0.008101 \\
+4 & 0.000013 & 0.008657 \\
+5 & 0.000014 & 0.008493 \\
+6 & 0.000015 & 0.008643 \\
+7 & 0.000020 & 0.009940 \\
+8 & 0.000030 & 0.011280 \\
+9 & 0.000040 & 0.012660 \\
+10 & 0.000050 & 0.013750 \\
+11 & 0.000060 & 0.014880 \\
+12 & 0.000070 & 0.015910 \\
+13 & 0.000080 & 0.017140 \\
+14 & 0.000090 & 0.017990 \\
+15 & 0.000100 & 0.018810 \\
+16 & 0.000110 & 0.019710 \\
+17 & 0.000120 & 0.020540 \\
+18 & 0.000130 & 0.021360 \\
+19 & 0.000140 & 0.022140 \\
+20 & 0.000150 & 0.022680 \\
+\end{longtable}
+
+\subsubsection{Plot the raw data}\label{plot-the-raw-data}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Plot it}
+
+\NormalTok{fig }\OperatorTok{=}\NormalTok{ shot.plot.scatter(}\StringTok{\textquotesingle{}Emission Current (A)\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Average (Vrms)\textquotesingle{}}\NormalTok{, marker}\OperatorTok{=}\StringTok{\textquotesingle{}d\textquotesingle{}}\NormalTok{)}
+\NormalTok{ax }\OperatorTok{=}\NormalTok{ fig.axes}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-31-output-1.png}}
+
+\subsubsection{\texorpdfstring{Calculate
+\(V^2_{rms}\)}{Calculate V\^{}2\_\{rms\}}}\label{calculate-v2_rms}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# transform the data, like you did with Johnson noise}
+\NormalTok{shot[}\StringTok{\textquotesingle{}Vms\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ shot[}\StringTok{"Average (Vrms)"}\NormalTok{]}\OperatorTok{**}\DecValTok{2}
+\NormalTok{shot}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& Emission Current (A) & Average (Vrms) & Vms \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0.000000 & 0.004807 & 0.000023 \\
+1 & 0.000010 & 0.007450 & 0.000056 \\
+2 & 0.000011 & 0.007873 & 0.000062 \\
+3 & 0.000012 & 0.008101 & 0.000066 \\
+4 & 0.000013 & 0.008657 & 0.000075 \\
+5 & 0.000014 & 0.008493 & 0.000072 \\
+6 & 0.000015 & 0.008643 & 0.000075 \\
+7 & 0.000020 & 0.009940 & 0.000099 \\
+8 & 0.000030 & 0.011280 & 0.000127 \\
+9 & 0.000040 & 0.012660 & 0.000160 \\
+10 & 0.000050 & 0.013750 & 0.000189 \\
+11 & 0.000060 & 0.014880 & 0.000221 \\
+12 & 0.000070 & 0.015910 & 0.000253 \\
+13 & 0.000080 & 0.017140 & 0.000294 \\
+14 & 0.000090 & 0.017990 & 0.000324 \\
+15 & 0.000100 & 0.018810 & 0.000354 \\
+16 & 0.000110 & 0.019710 & 0.000388 \\
+17 & 0.000120 & 0.020540 & 0.000422 \\
+18 & 0.000130 & 0.021360 & 0.000456 \\
+19 & 0.000140 & 0.022140 & 0.000490 \\
+20 & 0.000150 & 0.022680 & 0.000514 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{shot.plot.scatter(}\StringTok{\textquotesingle{}Emission Current (A)\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Vms\textquotesingle{}}\NormalTok{, marker}\OperatorTok{=}\StringTok{\textquotesingle{}d\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-33-output-1.png}}
+
+\subsubsection{Then fit it and plot it}\label{then-fit-it-and-plot-it}
+
+\textbf{Note:} Shot nose data may not be ``pure'' in that you will see a
+notable deviation from the expected behavior. The data may be affected
+by \(1/f\) noise in the vacuum diode that gets worse with higher
+emission current. This effect is reduced in the newer shot noise
+apparatus that uses a different vacuum diode. If you see a notable curve
+in your measured voltage, you may try a couple of work-arounds to obtain
+the linear part of the noise-squared vs emission current:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Select a portion of the data to fit, where the \(1/f\) problem is
+  less, near the low-emission current end of the data set.
+\item
+  Make a ploynomial fit and look at the linear term.
+\end{enumerate}
+
+You should try a couple of options and compare your results with your
+partners. You only need to do this if you see the \(1/f\) effect.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# First the fit. Try the whole data set first.}
+\CommentTok{\# The data seems fairly linear, lets try fitting first.}
+\NormalTok{shotparams }\OperatorTok{=}\NormalTok{ line\_fit\_and\_plot(shot[}\StringTok{\textquotesingle{}Emission Current (A)\textquotesingle{}}\NormalTok{], shot[}\StringTok{\textquotesingle{}Vms\textquotesingle{}}\NormalTok{])}
+
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 4
+    # data points      = 21
+    # variables        = 2
+    chi-square         = 2.0107e-10
+    reduced chi-square = 1.0583e-11
+    Akaike info crit   = -528.809393
+    Bayesian info crit = -526.720348
+    R-squared          = 0.99961758
+[[Variables]]
+    slope:      3.28674301 +/- 0.01474829 (0.45%) (init = 3.286743)
+    intercept:  2.6791e-05 +/- 1.1372e-06 (4.24%) (init = 2.679105e-05)
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-34-output-2.png}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+
+\CommentTok{\#\# and the slope of the data is:}
+\NormalTok{shot\_slope\_inclusive }\OperatorTok{=}\NormalTok{ get\_uslope(shotparams)}
+\NormalTok{shot\_slope\_inclusive}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+3.28674300654674+/-0.014748286981550951
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Next, lets only get the data we collected more of.}
+\CommentTok{\# We collected extra data from .01 {-} .015, so lets first split the data}
+
+\NormalTok{shot\_small }\OperatorTok{=}\NormalTok{ shot.iloc[}\DecValTok{0}\NormalTok{:}\DecValTok{7}\NormalTok{]}
+\NormalTok{shot\_small\_params }\OperatorTok{=}\NormalTok{ line\_fit\_and\_plot(shot\_small[}\StringTok{\textquotesingle{}Emission Current (A)\textquotesingle{}}\NormalTok{], shot\_small[}\StringTok{\textquotesingle{}Vms\textquotesingle{}}\NormalTok{])}
+\NormalTok{shot\_small\_slope }\OperatorTok{=}\NormalTok{ get\_uslope(shot\_small\_params)}
+\NormalTok{shot\_small\_slope}
+
+
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[[Model]]
+    Model(linear)
+[[Fit Statistics]]
+    # fitting method   = leastsq
+    # function evals   = 4
+    # data points      = 7
+    # variables        = 2
+    chi-square         = 4.4992e-11
+    reduced chi-square = 8.9984e-12
+    Akaike info crit   = -176.393090
+    Bayesian info crit = -176.501270
+    R-squared          = 0.97744034
+[[Variables]]
+    slope:      3.58792818 +/- 0.24376977 (6.79%) (init = 3.587928)
+    intercept:  2.2700e-05 +/- 2.8473e-06 (12.54%) (init = 2.270023e-05)
+\end{verbatim}
+
+\begin{verbatim}
+3.5879281820754727+/-0.2437697702576206
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Noise Analysis (template, 2024)_files/figure-latex/cell-36-output-3.png}}
+
+\subsubsection{Calculate Electron
+Charge}\label{calculate-electron-charge}
+
+\begin{quote}
+Use the fit results, propagate the uncertainty, and find a value for
+\(e\).
+\end{quote}
+
+The equation given is: \[I_{shot} = \sqrt{2eI_{emi}B}\]
+
+The slope we found is \(V^2/I\), so lets use that to find e.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# Calculate e with uncertainty and print it (with units) }
+\CommentTok{\#\# Compare with the accepted value}
+
+\CommentTok{\# You will need the correct sensing resistance in the shot noise box:}
+\CommentTok{\# Older box:}
+\CommentTok{\# R\_load = unc.ufloat(4976,1) \# Load resistance of shot noise box in ohms }
+\CommentTok{\# Newer box:}
+\NormalTok{R\_load }\OperatorTok{=}\NormalTok{ unc.ufloat(}\FloatTok{10000.0}\NormalTok{,}\DecValTok{10}\NormalTok{)}
+
+\CommentTok{\# e\_1 = .5 * (1000 * R\_load ** 2) ** {-}1 * shot\_slope\_inclusive \# This is mA}
+\NormalTok{e\_1 }\OperatorTok{=}\NormalTok{ (}\DecValTok{1} \OperatorTok{/}\NormalTok{ (}\DecValTok{2} \OperatorTok{*}\NormalTok{ (G }\OperatorTok{**} \DecValTok{2}\NormalTok{) }\OperatorTok{*} \DecValTok{1000} \OperatorTok{*}\NormalTok{ (R\_load }\OperatorTok{**} \DecValTok{2}\NormalTok{))) }\OperatorTok{*}\NormalTok{ shot\_slope\_inclusive}
+
+\NormalTok{e\_2 }\OperatorTok{=}\NormalTok{ (}\DecValTok{1} \OperatorTok{/}\NormalTok{ (}\DecValTok{2} \OperatorTok{*}\NormalTok{ (G }\OperatorTok{**} \DecValTok{2}\NormalTok{) }\OperatorTok{*} \DecValTok{1000} \OperatorTok{*}\NormalTok{ (R\_load }\OperatorTok{**} \DecValTok{2}\NormalTok{))) }\OperatorTok{*}\NormalTok{ shot\_small\_slope}
+
+\CommentTok{\# We have th}
+
+
+
+\CommentTok{\# Calculate the result, and propagate the uncertainty.}
+
+\CommentTok{\# Use whatever you need below}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}}\CharTok{\textbackslash{}n}\StringTok{Electron charge from whole data set = \{:.2uP\} C\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(e\_1))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}Electron charge from partial data set = \{:.2uP\} C\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(e\_2))}
+\CommentTok{\# print(\textquotesingle{}Electron charge from quadratic fit = \{:.2uP\} C\textquotesingle{}.format(e\_3))}
+\BuiltInTok{print}\NormalTok{(}\StringTok{\textquotesingle{}}\CharTok{\textbackslash{}n}\StringTok{Accepted value = }\SpecialCharTok{\{:.4g\}}\StringTok{ C\textquotesingle{}}\NormalTok{.}\BuiltInTok{format}\NormalTok{(const.e))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+
+Electron charge from whole data set = (1.604±0.014)×10⁻¹⁹ C
+Electron charge from partial data set = (1.75±0.12)×10⁻¹⁹ C
+
+Accepted value = 1.602e-19 C
+\end{verbatim}
+
+
+
+
+\end{document}
